@@ -45,9 +45,18 @@ export function CreateRestaurantForm({ email }: { email: string }) {
             Voce e o administrador da conta. O proximo passo e cadastrar as mesas e o cardapio.
           </p>
         </div>
-        <Button asChild size="lg" fullWidth icon={<ArrowRight className="size-4" />}>
-          <a href="/inicio">Acessar o painel</a>
-        </Button>
+        <div className="flex w-full flex-col items-stretch gap-2">
+          <Button asChild size="lg" fullWidth icon={<ArrowRight className="size-4" />}>
+            {/* Quem cria o restaurante vira admin: o destino util e o painel. */}
+            <a href="/gerente">Acessar o painel</a>
+          </Button>
+          <a
+            href="/inicio"
+            className="text-foreground-muted hover:text-foreground text-center text-xs"
+          >
+            ou ver todas as areas
+          </a>
+        </div>
       </div>
     );
   }

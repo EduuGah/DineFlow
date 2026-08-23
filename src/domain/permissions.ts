@@ -86,3 +86,22 @@ export function canAny(role: UserRole | null | undefined, permissions: Permissio
 export function isManagerRole(role: UserRole | null | undefined): boolean {
   return role === "manager" || role === "admin";
 }
+
+/**
+ * Area principal de cada papel -- o lugar onde a pessoa realmente trabalha.
+ *
+ * Destino de LINK, nunca de redirecionamento.
+ *
+ * A distincao importa: uma versao anterior deste mapa era usada pelo proxy
+ * para redirecionar automaticamente, lendo o papel do JWT (que so atualiza no
+ * refresh do token). Quando isso discordava do que a pagina decidia lendo o
+ * banco, a tela pulava sozinha. Aqui o papel vem do banco, no momento de
+ * renderizar o link, e ninguem e movido sem clicar.
+ */
+export const PRIMARY_AREA: Record<UserRole, string> = {
+  waiter: "/garcom",
+  kitchen: "/cozinha",
+  manager: "/gerente",
+  admin: "/gerente",
+  platform_admin: "/plataforma",
+};

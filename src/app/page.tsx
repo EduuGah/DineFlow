@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Bell, ChefHat, ShieldCheck, WifiOff } from "lucide-react";
 import { getSession } from "@/lib/auth/session";
+import { PRIMARY_AREA } from "@/domain/permissions";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,10 @@ const HIGHLIGHTS = [
 export default async function LandingPage() {
   const session = await getSession();
 
+  // Um clique ate o trabalho. O menu continua a um link de distancia, para
+  // quem precisa alternar entre salao, cozinha e painel.
+  const areaPrincipal = session?.profile ? PRIMARY_AREA[session.profile.role] : "/inicio";
+
   return (
     <div className="bg-background flex min-h-dvh flex-col">
       <header className="flex items-center justify-between px-6 py-5">
@@ -51,7 +56,7 @@ export default async function LandingPage() {
             do router. Numa transicao rara como "entrar no app", garantia de
             estado fresco vale mais do que navegacao instantanea.
           */}
-          <a href={session ? "/inicio" : "/entrar"}>{session ? "Ir para o app" : "Entrar"}</a>
+          <a href={session ? areaPrincipal : "/entrar"}>{session ? "Ir para o app" : "Entrar"}</a>
         </Button>
       </header>
 
@@ -64,9 +69,17 @@ export default async function LandingPage() {
               </p>
               <p className="text-foreground-muted text-sm">{session.email}</p>
             </div>
-            <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
-              <a href="/inicio">Acessar o painel</a>
-            </Button>
+            <div className="flex flex-col items-stretch gap-1.5">
+              <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
+                <a href={areaPrincipal}>Acessar o painel</a>
+              </Button>
+              <a
+                href="/inicio"
+                className="text-foreground-muted hover:text-foreground text-center text-xs"
+              >
+                ou ver todas as areas
+              </a>
+            </div>
           </section>
         ) : null}
 

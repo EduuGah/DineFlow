@@ -22,6 +22,14 @@ export type Session = {
   email: string;
   profile: Profile | null;
   restaurant: Restaurant | null;
+  /**
+   * Falha ao ler perfil ou restaurante, quando houve.
+   *
+   * Nulo significa "a leitura deu certo" -- e nao "encontrou algo". Uma sessao
+   * sem perfil e com error nulo e um primeiro acesso legitimo; com error
+   * preenchido e um problema a ser mostrado, nao um cadastro a ser pedido.
+   */
+  error: string | null;
 };
 
 /** Sessao com perfil garantido, para as telas de operacao. */
@@ -41,21 +49,36 @@ export const getSession = cache(async (): Promise<Session | null> => {
 
   if (!user) return null;
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("*")
     .eq("id", user.id)
     .maybeSingle();
 
-  const { data: restaurant } = profile?.restaurant_id
+  const { data: restaurant, error: restaurantError } = profile?.restaurant_id
     ? await supabase.from("restaurants").select("*").eq("id", profile.restaurant_id).maybeSingle()
-    : { data: null };
+    : { data: null, error: null };
+
+  /*
+   * "A consulta falhou" e "o registro nao existe" sao fatos diferentes.
+   *
+   * Ignorar o erro e ficar so com `data: null` colapsava os dois: uma falha de
+   * leitura virava "essa conta nao tem restaurante", e a pessoa recebia a tela
+   * de cadastro tendo um restaurante ativo no banco. Quem le a sessao precisa
+   * poder distinguir -- e dizer isso na tela.
+   */
+  const error = profileError ?? restaurantError;
+
+  if (error) {
+    console.error("[dineflow] falha ao carregar a sessao:", error.code, error.message);
+  }
 
   return {
     userId: user.id,
     email: user.email ?? profile?.email ?? "",
     profile: profile ?? null,
     restaurant: restaurant ?? null,
+    error: error ? `${error.code ?? "erro"}: ${error.message}` : null,
   };
 });
 
