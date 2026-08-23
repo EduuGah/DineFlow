@@ -45,11 +45,31 @@ export default async function LandingPage() {
           <span className="text-foreground text-lg font-bold tracking-tight">DineFlow</span>
         </span>
         <Button asChild variant={session ? "primary" : "ghost"}>
-          <Link href={session ? "/inicio" : "/entrar"}>{session ? "Ir para o app" : "Entrar"}</Link>
+          {/*
+            Ancora comum, e nao o Link do Next, de proposito: a recarga completa
+            nunca serve uma versao antiga da pagina de destino guardada no cache
+            do router. Numa transicao rara como "entrar no app", garantia de
+            estado fresco vale mais do que navegacao instantanea.
+          */}
+          <a href={session ? "/inicio" : "/entrar"}>{session ? "Ir para o app" : "Entrar"}</a>
         </Button>
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-14 px-6 py-10">
+        {session ? (
+          <section className="border-brand/40 bg-brand-soft/40 flex flex-wrap items-center gap-4 rounded-[var(--radius-card)] border-2 p-5">
+            <div className="min-w-0 flex-1">
+              <p className="text-foreground text-base font-semibold">
+                {session.restaurant?.name ?? "Voce ja esta conectado"}
+              </p>
+              <p className="text-foreground-muted text-sm">{session.email}</p>
+            </div>
+            <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
+              <a href="/inicio">Acessar o painel</a>
+            </Button>
+          </section>
+        ) : null}
+
         <section className="flex flex-col gap-6">
           <h1 className="text-foreground max-w-3xl text-3xl leading-tight font-bold tracking-tight sm:text-5xl">
             Um restaurante tolera um sistema simples.
@@ -61,22 +81,20 @@ export default async function LandingPage() {
             que.
           </p>
           <div className="flex flex-wrap gap-3">
-            {session ? (
-              <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
-                <Link href="/inicio">Ir para o app</Link>
-              </Button>
-            ) : (
+            {session ? null : (
               <>
                 <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
-                  <Link href="/entrar">Cadastrar meu restaurante</Link>
+                  <a href="/entrar">Cadastrar meu restaurante</a>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <Link href="/entrar">Ja tenho conta</Link>
+                  <a href="/entrar">Ja tenho conta</a>
                 </Button>
               </>
             )}
           </div>
-          <p className="text-foreground-subtle text-sm">14 dias de teste. Sem cartao.</p>
+          {session ? null : (
+            <p className="text-foreground-subtle text-sm">14 dias de teste. Sem cartao.</p>
+          )}
         </section>
 
         <section className="grid gap-4 sm:grid-cols-2">
