@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { usernameSchema } from "./staff-credentials";
 
 /**
  * Validacao de entrada. Roda no servidor (Server Actions) e e reaproveitada no
@@ -46,13 +47,15 @@ export const passwordSchema = z
   .max(72, "A senha pode ter no máximo 72 caracteres.");
 
 export const signInSchema = z.object({
-  email: emailSchema,
+  // Aceita usuário ou e-mail: a equipe digita "joao", a gerência pode digitar
+  // o e-mail de verdade. A conversão fica em resolveLoginIdentifier().
+  identifier: z.string().trim().min(1, "Informe seu usuário."),
   password: z.string().min(1, "Informe sua senha."),
 });
 
 export const staffAccountSchema = z.object({
   name: requiredText("O nome do funcionário", 2, 120),
-  email: emailSchema,
+  username: usernameSchema,
   role: z.enum(["waiter", "kitchen", "manager", "admin"], {
     error: "Selecione um papel válido.",
   }),

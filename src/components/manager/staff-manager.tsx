@@ -13,6 +13,7 @@ import {
   updateStaff,
 } from "@/server/actions/staff";
 import { ROLE_DESCRIPTIONS, ROLE_LABELS } from "@/domain/labels";
+import { displayCredential } from "@/domain/staff-credentials";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog, Dialog } from "@/components/ui/dialog";
 import { Field, Input, Select } from "@/components/ui/field";
@@ -65,7 +66,7 @@ export function StaffManager({
           <thead>
             <tr>
               <Th>Nome</Th>
-              <Th>E-mail</Th>
+              <Th>Usuário</Th>
               <Th>Papel</Th>
               <Th>Situação</Th>
               <Th align="right">Ações</Th>
@@ -82,7 +83,7 @@ export function StaffManager({
                     </Badge>
                   ) : null}
                 </Td>
-                <Td className="text-foreground-muted">{person.email}</Td>
+                <Td className="text-foreground-muted">{displayCredential(person.email)}</Td>
                 <Td>{ROLE_LABELS[person.role]}</Td>
                 <Td>
                   {person.status === "active" ? (
@@ -249,19 +250,20 @@ function CreateAccountDialog({
         </Field>
 
         <Field
-          label="E-mail"
-          htmlFor="conta-email"
+          label="Usuário"
+          htmlFor="conta-usuario"
           required
-          hint="Serve como usuário. Não precisa ser conta Google."
-          error={fieldErrors?.email}
+          hint="É com isso que a pessoa entra. Sem e-mail, sem espaços."
+          error={fieldErrors?.username}
         >
           <Input
-            id="conta-email"
-            name="email"
-            type="email"
-            inputMode="email"
+            id="conta-usuario"
+            name="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             required
-            placeholder="joao@restaurante.com.br"
+            placeholder="joao"
           />
         </Field>
 
@@ -320,7 +322,7 @@ function EditStaffDialog({
       open={Boolean(staff)}
       onOpenChange={(next) => !next && onClose()}
       title={staff?.name ?? "Funcionário"}
-      description={staff?.email}
+      description={staff ? displayCredential(staff.email) : undefined}
       footer={
         <>
           <Button variant="ghost" onClick={onClose} disabled={pending}>

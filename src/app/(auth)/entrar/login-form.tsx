@@ -7,7 +7,7 @@ import { Field, Input } from "@/components/ui/field";
 
 /** Mensagens dos erros que o fluxo de acesso devolve na URL. */
 const LOGIN_ERRORS: Record<string, string> = {
-  credencial: "E-mail ou senha incorretos.",
+  credencial: "Usuário ou senha incorretos.",
   "conta-inativa": "Seu acesso foi desativado. Fale com o gerente do restaurante.",
   "acesso-negado": "O acesso pela conta Google foi negado. Tente de novo.",
   "link-invalido": "O link de retorno era inválido. Comece o login novamente.",
@@ -74,16 +74,22 @@ export function LoginForm({ next, loginError }: { next?: string; loginError?: st
       >
         <input type="hidden" name="proximo" value={next ?? ""} />
 
-        <Field label="E-mail" htmlFor="email" required>
+        <Field
+          label="Usuário"
+          htmlFor="identifier"
+          required
+          hint="O usuário que o gerente criou para você."
+        >
           <Input
-            id="email"
-            name="email"
-            type="email"
-            inputMode="email"
+            id="identifier"
+            name="identifier"
             autoComplete="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             autoFocus
             required
-            placeholder="voce@restaurante.com.br"
+            placeholder="joao"
           />
         </Field>
 
