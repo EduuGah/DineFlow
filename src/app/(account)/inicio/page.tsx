@@ -6,6 +6,7 @@ import { PageContainer } from "@/components/shared/page-header";
 import { AppHub } from "@/components/shared/app-hub";
 import { CreateRestaurantForm } from "@/components/manager/create-restaurant-form";
 import { Banner } from "@/components/ui/feedback";
+import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = { title: "Início" };
 export const dynamic = "force-dynamic";
@@ -19,6 +20,28 @@ export const dynamic = "force-dynamic";
  */
 export default async function HomePage() {
   const session = await requireSession();
+
+  /*
+   * Leitura falhou: nao pedimos cadastro.
+   *
+   * Sem esta checagem, uma falha de leitura viraria "cadastre seu restaurante"
+   * para quem ja tem um -- pedindo algo impossivel e escondendo o problema
+   * real. Melhor mostrar o erro e o caminho para o diagnostico.
+   */
+  if (session.error) {
+    return (
+      <PageContainer className="max-w-xl">
+        <Banner tone="danger">
+          Nao foi possivel carregar seus dados. Isso nao significa que falte cadastro -- a leitura
+          em si falhou.
+        </Banner>
+        <p className="text-foreground-muted font-mono text-xs break-all">{session.error}</p>
+        <Button asChild variant="outline" className="self-start">
+          <Link href="/diagnostico">Abrir diagnostico</Link>
+        </Button>
+      </PageContainer>
+    );
+  }
 
   // Sem perfil: ou e o dono no primeiro acesso, ou falta o convite do gerente.
   if (!session.profile) {
