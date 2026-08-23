@@ -1,16 +1,18 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
 import { AlertCircle } from "lucide-react";
-import { signInWithGoogle } from "@/server/actions/auth";
 import { Button } from "@/components/ui/button";
-import type { ActionResult } from "@/lib/errors";
 
-/** Mensagens dos erros que o callback do OAuth devolve na URL. */
-const CALLBACK_ERRORS: Record<string, string> = {
+/** Mensagens dos erros que o fluxo de OAuth devolve na URL. */
+const LOGIN_ERRORS: Record<string, string> = {
   "acesso-negado": "O acesso pela conta Google foi negado. Tente de novo.",
   "link-invalido": "O link de retorno era invalido. Comece o login novamente.",
+  "sem-verificador":
+    "A sessao do login se perdeu no caminho. Comece de novo por esta tela, no mesmo navegador.",
   "sessao-invalida": "Nao foi possivel concluir o login. Tente de novo.",
+  "provedor-indisponivel":
+    "O login com Google esta indisponivel no momento. Fale com o administrador.",
 };
 
 function GoogleMark() {
@@ -36,18 +38,24 @@ function GoogleMark() {
   );
 }
 
-export function LoginForm({ next, callbackError }: { next?: string; callbackError?: string }) {
-  const [state, action, pending] = useActionState<ActionResult<never> | null, FormData>(
-    signInWithGoogle,
-    null,
-  );
+export function LoginForm({ next, loginError }: { next?: string; loginError?: string }) {
+  const [redirecting, setRedirecting] = useState(false);
 
-  const error =
-    (state && !state.ok ? state.error : null) ??
-    (callbackError ? (CALLBACK_ERRORS[callbackError] ?? CALLBACK_ERRORS["sessao-invalida"]) : null);
+  const error = loginError ? (LOGIN_ERRORS[loginError] ?? LOGIN_ERRORS["sessao-invalida"]) : null;
 
   return (
-    <form action={action} className="flex flex-col gap-4">
+    /*
+     * Formulario GET para um Route Handler, e nao Server Action.
+     *
+     * O handler precisa gravar o cookie do verificador PKCE na mesma resposta
+     * que redireciona para o Google. Como bonus, funciona sem JavaScript.
+     */
+    <form
+      action="/auth/login"
+      method="get"
+      onSubmit={() => setRedirecting(true)}
+      className="flex flex-col gap-4"
+    >
       <input type="hidden" name="proximo" value={next ?? ""} />
 
       {error ? (
@@ -66,7 +74,7 @@ export function LoginForm({ next, callbackError }: { next?: string; callbackErro
         variant="outline"
         fullWidth
         icon={<GoogleMark />}
-        loading={pending}
+        loading={redirecting}
         loadingText="Abrindo o Google..."
       >
         Continuar com Google

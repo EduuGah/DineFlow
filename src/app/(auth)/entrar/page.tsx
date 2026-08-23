@@ -19,7 +19,7 @@ export default async function LoginPage({
         </p>
       </div>
 
-      <LoginForm next={proximo} callbackError={erro} />
+      <LoginForm next={proximo} loginError={erro} />
 
       <div className="bg-surface-muted text-foreground-muted rounded-[var(--radius-control)] px-4 py-3 text-sm">
         <p className="text-foreground font-medium">Primeira vez aqui?</p>

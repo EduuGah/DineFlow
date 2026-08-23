@@ -69,7 +69,9 @@ A URL de retorno do DineFlow é **fixa**, sem query string: `/auth/callback`. O 
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | chave anon / publishable     | Production, Preview, Development |
 | `NEXT_PUBLIC_APP_URL`           | `https://seu-app.vercel.app` | **Production apenas**            |
 
-Deixe `NEXT_PUBLIC_APP_URL` fora dos ambientes de Preview de propósito: sem ela, o app usa `VERCEL_URL`, que é a URL própria daquele deploy. Fixar o valor de produção no preview faria o login de um preview terminar no site de produção.
+`NEXT_PUBLIC_APP_URL` precisa ser **exatamente o domínio que aparece na barra do navegador**. O cookie do verificador PKCE é gravado no host da ida e lido no host da volta; se diferirem, o login falha sem erro visível.
+
+Deixe-a fora do Preview de propósito: ali o app usa `VERCEL_URL`, que é o endereço daquele deploy — e é justamente o que você visita num preview. Fixar o valor de produção faria o login de um preview terminar no site de produção.
 
 Depois de alterar variáveis, **refaça o deploy** — o Next embute as `NEXT_PUBLIC_` no build.
 
@@ -99,13 +101,28 @@ O gerente convida em **Equipe → Convidar pelo e-mail**. O e-mail precisa ser e
 
 Só existe **um convite pendente por e-mail** em toda a plataforma. Dois restaurantes convidando a mesma pessoa criaria ambiguidade justamente no momento em que ninguém está olhando: o primeiro login dela.
 
+## Diagnóstico
+
+A tela de login mostra uma mensagem curta; o motivo real vai para o log do servidor com o prefixo `[auth]`. No desenvolvimento local ele aparece no terminal do `npm run dev`; na Vercel, em **Deployments → Functions → Logs**.
+
+| Mensagem na tela                         | Código na URL           | O que aconteceu                                                                      |
+| ---------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------ |
+| "O acesso pela conta Google foi negado"  | `acesso-negado`         | O Google ou o Supabase recusaram; veja o log                                         |
+| "O link de retorno era invalido"         | `link-invalido`         | Voltou sem `code` — normalmente configuração de provedor                             |
+| "A sessao do login se perdeu no caminho" | `sem-verificador`       | O cookie PKCE não voltou: domínio diferente entre ida e volta, ou cookies bloqueados |
+| "Nao foi possivel concluir o login"      | `sessao-invalida`       | A troca do `code` falhou; o log tem o motivo do Supabase                             |
+| "O login com Google esta indisponivel"   | `provedor-indisponivel` | Provedor Google desligado ou sem credenciais no Supabase                             |
+
+> Um `code` só pode ser trocado **uma vez**. Recarregar a página de retorno sempre falha — comece o login de novo pela tela de entrada.
+
 ## Erros comuns
 
-| Sintoma                                     | Causa provável                                                       |
-| ------------------------------------------- | -------------------------------------------------------------------- |
-| `redirect_uri_mismatch` no Google           | O URI autorizado no Google não é o do Supabase (`/auth/v1/callback`) |
-| Volta para o login sem mensagem             | A URL `/auth/callback` do app não está nas Redirect URLs do Supabase |
-| Login funciona local, falha na Vercel       | `NEXT_PUBLIC_APP_URL` errada, ou faltou refazer o deploy             |
-| "Acesso bloqueado: app não verificado"      | App OAuth em modo Teste e o e-mail não está na lista de teste        |
-| Entra mas cai em "cadastre seu restaurante" | Não há convite pendente para esse e-mail                             |
-| `Invalid API key`                           | Chave anon com caractere extra colado (espaço, barra, aspas)         |
+| Sintoma                                     | Causa provável                                                                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `redirect_uri_mismatch` no Google           | O URI autorizado no Google não é o do Supabase (`/auth/v1/callback`)                                                                        |
+| Volta para o login sem mensagem             | A URL `/auth/callback` do app não está nas Redirect URLs do Supabase                                                                        |
+| Login funciona local, falha na Vercel       | `NEXT_PUBLIC_APP_URL` errada, ou faltou refazer o deploy                                                                                    |
+| "Acesso bloqueado: app não verificado"      | App OAuth em modo Teste e o e-mail não está na lista de teste                                                                               |
+| Entra mas cai em "cadastre seu restaurante" | Não há convite pendente para esse e-mail                                                                                                    |
+| `sem-verificador` sempre                    | `NEXT_PUBLIC_APP_URL` aponta para um domínio diferente daquele em que você abriu o site (ida grava o cookie num host, volta procura noutro) |
+| `Invalid API key`                           | Chave anon com caractere extra colado (espaço, barra, aspas)                                                                                |

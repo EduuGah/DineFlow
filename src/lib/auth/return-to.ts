@@ -9,3 +9,15 @@ export const RETURN_TO_COOKIE = "dineflow-proximo";
 
 /** Validade curta: e um ida-e-volta ao Google, nao uma preferencia. */
 export const RETURN_TO_MAX_AGE = 600;
+
+/**
+ * Normaliza o destino pos-login.
+ *
+ * Aceita apenas caminho interno. Um "//evil.com" seria tratado pelo navegador
+ * como URL absoluta, virando um redirecionamento aberto -- com a sessao
+ * recem-criada junto.
+ */
+export function safeReturnTo(value: string | null | undefined): string {
+  const path = (value ?? "").trim();
+  return path.startsWith("/") && !path.startsWith("//") ? path : "/inicio";
+}
