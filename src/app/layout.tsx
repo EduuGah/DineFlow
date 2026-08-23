@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | DineFlow",
   },
   description:
-    "Sistema de pedidos para restaurantes: do garcom a cozinha, em tempo real, sem perder pedido.",
+    "Sistema de pedidos para restaurantes: do garçom a cozinha, em tempo real, sem perder pedido.",
   applicationName: "DineFlow",
 };
 
@@ -28,7 +28,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   // A equipe usa a tela com a mao molhada e apressada; o zoom por toque duplo
   // atrapalha mais do que ajuda, mas o pinch continua liberado por
-  // acessibilidade (maximumScale nao e travado).
+  // acessibilidade (maximumScale não e travado).
   viewportFit: "cover",
 };
 

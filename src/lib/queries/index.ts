@@ -5,7 +5,7 @@ import type { Database, Tables } from "@/types/database";
  * Consultas compartilhadas entre servidor e cliente.
  *
  * Todas recebem o client como parametro: no Server Component chega o client de
- * servidor (cookies da sessao) e no browser o client do navegador. A query e a
+ * servidor (cookies da sessão) e no browser o client do navegador. A query e a
  * mesma, e o RLS aplica o mesmo recorte de tenant nos dois casos.
  */
 export type Db = SupabaseClient<Database>;
@@ -27,7 +27,7 @@ export type TableWithOrders = Tables<"tables"> & {
   >[];
 };
 
-/** Salao do garcom: mesas ativas com as comandas ainda abertas. */
+/** Salão do garçom: mesas ativas com as comandas ainda abertas. */
 export async function fetchTablesWithOrders(db: Db): Promise<TableWithOrders[]> {
   const { data, error } = await db
     .from("tables")
@@ -50,7 +50,7 @@ export type OrderWithItems = Tables<"orders"> & {
 
 /*
  * `users!orders_waiter_same_restaurant` nomeia a foreign key de proposito:
- * orders aponta para users duas vezes (waiter_id e cancelled_by), entao um
+ * orders aponta para users duas vezes (waiter_id e cancelled_by), então um
  * `users(...)` solto seria ambiguo e o PostgREST recusaria a consulta.
  */
 const ORDER_SELECT = `
@@ -72,10 +72,10 @@ export async function fetchOrder(db: Db, orderId: string): Promise<OrderWithItem
 }
 
 /**
- * Comanda aberta da mesa, em qualquer status nao finalizado.
+ * Comanda aberta da mesa, em qualquer status não finalizado.
  *
- * Se for rascunho, o garcom continua montando; se ja foi enviada, os proximos
- * itens entram como adicional. As duas situacoes usam a mesma tela.
+ * Se for rascunho, o garçom continua montando; se já foi enviada, os proximos
+ * itens entram como adicional. As duas situações usam a mesma tela.
  */
 export async function fetchOpenOrderForTable(
   db: Db,
@@ -135,7 +135,7 @@ export async function fetchOrderHistory(
 }
 
 // ---------------------------------------------------------------------------
-// Cardapio
+// Cardápio
 // ---------------------------------------------------------------------------
 
 export type MenuCategory = Tables<"categories"> & { products: Tables<"products">[] };

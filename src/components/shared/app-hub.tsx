@@ -73,13 +73,13 @@ const DESTINATIONS: Destination[] = [
 ];
 
 /**
- * Tela inicial de quem ja tem vinculo.
+ * Tela inicial de quem já tem vínculo.
  *
- * Existe para tornar a navegacao explicita. Antes, entrar levava a pessoa
- * direto para a area do papel dela por redirecionamento automatico -- o que
- * funciona ate dois redirecionamentos discordarem, e ai a tela pisca sem
+ * Existe para tornar a navegação explicita. Antes, entrar levava a pessoa
+ * direto para a área do papel dela por redirecionamento automático -- o que
+ * funciona até dois redirecionamentos discordarem, e aí a tela pisca sem
  * explicacao. Um botao por destino resolve isso e ainda deixa o gerente
- * alternar entre painel, salao e cozinha sem decorar URL.
+ * alternar entre painel, salão e cozinha sem decorar URL.
  */
 export function AppHub({
   role,

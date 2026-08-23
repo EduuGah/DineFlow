@@ -63,6 +63,51 @@ describe("migrations", () => {
     ]);
   });
 
+  it("concede a authenticated o privilegio de tocar as tabelas do tenant", async () => {
+    /*
+     * Privilegio de tabela e RLS sao camadas diferentes, e a falta de cada uma
+     * falha de um jeito diferente: sem GRANT vem "permission denied for table",
+     * sem policy vem zero linhas. O primeiro caso ja chegou a producao -- o app
+     * mostrava "cadastre seu restaurante" para quem tinha um, porque a leitura
+     * do perfil era negada e o erro era engolido.
+     */
+    const semPrivilegio = await db.sql<{ relname: string }>(
+      `select c.relname
+       from pg_class c
+       join pg_namespace n on n.oid = c.relnamespace
+       where n.nspname = 'public'
+         and c.relkind = 'r'
+         and c.relname <> 'order_counters'
+         and not has_table_privilege('authenticated', c.oid, 'SELECT')
+       order by c.relname`,
+    );
+
+    expect(semPrivilegio).toEqual([]);
+  });
+
+  it("mantem o contador de pedidos fora do alcance do cliente", async () => {
+    // Manipulado apenas por app.next_order_number(), que e SECURITY DEFINER.
+    const [{ tem }] = await db.sql<{ tem: boolean }>(
+      `select has_table_privilege('authenticated', 'public.order_counters', 'SELECT') as tem`,
+    );
+
+    expect(tem).toBe(false);
+  });
+
+  it("nao deixa nenhuma superficie para anon", async () => {
+    const acessiveis = await db.sql<{ relname: string }>(
+      `select c.relname
+       from pg_class c
+       join pg_namespace n on n.oid = c.relnamespace
+       where n.nspname = 'public'
+         and c.relkind = 'r'
+         and has_table_privilege('anon', c.oid, 'SELECT')
+       order by c.relname`,
+    );
+
+    expect(acessiveis).toEqual([]);
+  });
+
   it("provisiona restaurante e perfil no cadastro do dono", async () => {
     const seeded = await seedRestaurant(db, "Cantina Bella");
 

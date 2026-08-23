@@ -16,9 +16,9 @@ const VARIANTS: Record<Variant, string> = {
 };
 
 /*
- * As alturas nao sao decorativas. `lg` (48px) e o minimo confortavel para um
- * garcom tocando com o polegar enquanto segura uma bandeja; `xl` (64px) e o
- * tamanho das acoes do KDS, tocadas de longe e com a mao ocupada.
+ * As alturas não são decorativas. `lg` (48px) e o mínimo confortavel para um
+ * garçom tocando com o polegar enquanto segura uma bandeja; `xl` (64px) e o
+ * tamanho das ações do KDS, tocadas de longe e com a mao ocupada.
  */
 const SIZES: Record<Size, string> = {
   sm: "h-9 px-3 text-sm gap-1.5",

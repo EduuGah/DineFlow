@@ -3,48 +3,48 @@ import type { PostgrestError } from "@supabase/supabase-js";
 /**
  * Traducao de erro para linguagem de restaurante.
  *
- * Um garcom no meio do movimento nao pode receber "new row violates row-level
- * security policy". Os codigos DF00x sao levantados pelos triggers do banco
+ * Um garçom no meio do movimento não pode receber "new row violates row-level
+ * security policy". Os códigos DF00x são levantados pelos triggers do banco
  * (ver supabase/migrations/..._orders.sql) justamente para que a mensagem
  * chegue aqui identificavel.
  */
 
 const SQLSTATE_MESSAGES: Record<string, string> = {
-  DF001: "Esse pedido nao pode mudar para esse status agora. Atualize a tela e tente de novo.",
-  DF002: "Voce nao tem permissao para essa acao.",
-  DF003: "Esse produto esta indisponivel no momento.",
-  DF004: "Esse pedido ja foi para a cozinha e nao aceita mais essa alteracao.",
-  DF005: "Nao ha itens novos para enviar.",
-  DF006: "Sua conta ja esta vinculada a um restaurante.",
+  DF001: "Esse pedido não pode mudar para esse status agora. Atualize a tela e tente de novo.",
+  DF002: "Você não tem permissão para essa ação.",
+  DF003: "Esse produto está indisponível no momento.",
+  DF004: "Esse pedido já foi para a cozinha e não aceita mais essa alteração.",
+  DF005: "Não há itens novos para enviar.",
+  DF006: "Sua conta já está vinculada a um restaurante.",
   DF007: "Informe o nome do restaurante.",
 
-  // Codigos padrao do Postgres que aparecem com frequencia na operacao.
-  "23505": "Esse registro ja existe.",
-  "23503": "Esse item depende de outro registro que nao existe mais.",
-  "23514": "Alguns dados nao passaram na validacao.",
-  "42501": "Voce nao tem permissao para essa acao.",
-  PGRST301: "Sua sessao expirou. Entre novamente.",
+  // Codigos padrao do Postgres que aparecem com frequência na operação.
+  "23505": "Esse registro já existe.",
+  "23503": "Esse item depende de outro registro que não existe mais.",
+  "23514": "Alguns dados não passaram na validação.",
+  "42501": "Você não tem permissão para essa ação.",
+  PGRST301: "Sua sessão expirou. Entre novamente.",
 
   /*
-   * Banco desatualizado em relacao ao codigo.
+   * Banco desatualizado em relacao ao código.
    *
    * Acontece quando um deploy sobe sem as migrations correspondentes: a tela
-   * chama algo que ainda nao existe no banco. A mensagem aponta para a causa
-   * porque quem ve isso e quem instalou o sistema, nao o garcom.
+   * chama algo que ainda não existe no banco. A mensagem aponta para a causa
+   * porque quem ve isso e quem instalou o sistema, não o garçom.
    */
-  "42P01": "O banco de dados esta desatualizado (tabela ausente). Aplique as migrations pendentes.",
-  "42883": "O banco de dados esta desatualizado (funcao ausente). Aplique as migrations pendentes.",
+  "42P01": "O banco de dados está desatualizado (tabela ausente). Aplique as migrations pendentes.",
+  "42883": "O banco de dados está desatualizado (funcao ausente). Aplique as migrations pendentes.",
   PGRST202:
-    "O banco de dados esta desatualizado: esta operacao ainda nao existe nele. Aplique as migrations pendentes (npm run db:push).",
+    "O banco de dados está desatualizado: esta operação ainda não existe nele. Aplique as migrations pendentes (npm run db:push).",
 };
 
 const UNIQUE_CONSTRAINT_MESSAGES: Record<string, string> = {
-  staff_invitations_pending_email_key: "Ja existe um convite pendente para esse e-mail.",
-  orders_restaurant_id_client_request_id_key: "Esse pedido ja foi enviado.",
-  tables_restaurant_id_number_key: "Ja existe uma mesa com esse numero.",
-  categories_restaurant_id_name_key: "Ja existe uma categoria com esse nome.",
-  users_restaurant_email_key: "Ja existe um funcionario com esse e-mail.",
-  restaurants_slug_key: "Ja existe um restaurante com esse endereco.",
+  staff_invitations_pending_email_key: "Já existe um convite pendente para esse e-mail.",
+  orders_restaurant_id_client_request_id_key: "Esse pedido já foi enviado.",
+  tables_restaurant_id_number_key: "Já existe uma mesa com esse número.",
+  categories_restaurant_id_name_key: "Já existe uma categoria com esse nome.",
+  users_restaurant_email_key: "Já existe um funcionário com esse e-mail.",
+  restaurants_slug_key: "Já existe um restaurante com esse endereço.",
 };
 
 export class DomainError extends Error {
@@ -57,7 +57,7 @@ export class DomainError extends Error {
   }
 }
 
-/** Erro de idempotencia: a mesma operacao ja tinha sido registrada. */
+/** Erro de idempotencia: a mesma operação já tinha sido registrada. */
 export function isDuplicateRequest(error: unknown): boolean {
   const pg = error as Partial<PostgrestError> | null;
   return (
@@ -82,17 +82,17 @@ export function friendlyError(error: unknown): string {
     return SQLSTATE_MESSAGES[pg.code];
   }
 
-  // Violacao de RLS chega sem codigo DF: o usuario mirou dado de outro tenant
-  // ou perdeu a permissao. Nao vale detalhar qual dos dois.
+  // Violacao de RLS chega sem código DF: o usuário mirou dado de outro tenant
+  // ou perdeu a permissão. Não vale detalhar qual dos dois.
   if (pg?.message?.includes("row-level security")) {
-    return "Voce nao tem acesso a esse dado.";
+    return "Você não tem acesso a esse dado.";
   }
 
   if (pg?.message?.includes("Failed to fetch") || pg?.message?.includes("NetworkError")) {
-    return "Sem conexao. Verifique a internet e tente de novo.";
+    return "Sem conexão. Verifique a internet e tente de novo.";
   }
 
-  return "Nao foi possivel concluir a operacao. Tente de novo.";
+  return "Não foi possível concluir a operação. Tente de novo.";
 }
 
 export type ActionResult<T = void> =
@@ -106,15 +106,15 @@ export function fail(error: unknown, fieldErrors?: Record<string, string[]>): Ac
   /*
    * No servidor, o motivo real vai para o log.
    *
-   * A tela mostra so o que ajuda quem esta atendendo; quem opera o sistema
-   * precisa do resto. Sem isto, um erro sem codigo conhecido vira "nao foi
-   * possivel concluir a operacao" e desaparece -- sem nenhum rastro de onde
+   * A tela mostra só o que ajuda quem esta atendendo; quem opera o sistema
+   * precisa do resto. Sem isto, um erro sem código conhecido vira "não foi
+   * possível concluir a operação" e desaparece -- sem nenhum rastro de onde
    * procurar.
    */
   if (typeof window === "undefined") {
     const pg = error as Partial<PostgrestError> & { message?: string };
     console.error(
-      "[dineflow] acao falhou:",
+      "[dineflow] ação falhou:",
       [pg?.code, pg?.message ?? String(error), pg?.details, pg?.hint].filter(Boolean).join(" | "),
     );
   }

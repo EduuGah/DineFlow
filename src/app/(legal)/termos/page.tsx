@@ -7,7 +7,7 @@ export default function TermsPage() {
   return (
     <LegalPlaceholder
       title="Termos de uso"
-      description="Os termos de uso do DineFlow estao em elaboracao juridica e serao publicados aqui antes do lancamento comercial."
+      description="Os termos de uso do DineFlow estão em elaboracao juridica e serao publicados aqui antes do lancamento comercial."
     />
   );
 }

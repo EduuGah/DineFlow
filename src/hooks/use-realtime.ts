@@ -12,11 +12,11 @@ type Options = {
   /** Canal por restaurante: garante que um tenant nunca escute o outro. */
   restaurantId: string;
   tables: WatchedTable[];
-  /** Chamado a cada evento novo (ja deduplicado). */
+  /** Chamado a cada evento novo (já deduplicado). */
   onEvent?: (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => void;
   /**
-   * Chamado quando o canal (re)conecta. E o gancho de sincronizacao: depois de
-   * uma queda, eventos perdidos nao voltam -- a tela precisa recarregar o
+   * Chamado quando o canal (re)conecta. E o gancho de sincronização: depois de
+   * uma queda, eventos perdidos não voltam -- a tela precisa recarregar o
    * estado inteiro do servidor.
    */
   onSync?: () => void;
@@ -27,11 +27,11 @@ type Options = {
 const DEDUPE_WINDOW = 200;
 
 /**
- * Assinatura de realtime com reconexao e resync (secao 13 do roadmap).
+ * Assinatura de realtime com reconexão e resync (secao 13 do roadmap).
  *
- * O Supabase reaplica o RLS por assinante, entao mesmo um canal sem filtro
- * so entregaria linhas do proprio restaurante. O filtro por restaurant_id
- * existe para economizar trafego, nao para isolar.
+ * O Supabase reaplica o RLS por assinante, então mesmo um canal sem filtro
+ * só entregaria linhas do próprio restaurante. O filtro por restaurant_id
+ * existe para economizar tráfego, não para isolar.
  */
 export function useRealtime({
   restaurantId,
@@ -43,8 +43,8 @@ export function useRealtime({
   const [status, setStatus] = useState<RealtimeStatus>("connecting");
 
   // Refs para os callbacks: sem isso, cada render recriaria o canal e a
-  // cozinha perderia eventos no meio do movimento. A atualizacao acontece num
-  // efeito (nao no corpo do render) porque escrever em ref durante o render
+  // cozinha perderia eventos no meio do movimento. A atualização acontece num
+  // efeito (não no corpo do render) porque escrever em ref durante o render
   // quebra com renderizacao concorrente.
   const onEventRef = useRef(onEvent);
   const onSyncRef = useRef(onSync);
@@ -66,9 +66,9 @@ export function useRealtime({
     let cancelled = false;
 
     /**
-     * O servidor pode reentregar o mesmo evento apos uma reconexao. A chave
-     * junta tabela + id + versao da linha, entao um UPDATE legitimo depois de
-     * outro nao e confundido com repeticao.
+     * O servidor pode reentregar o mesmo evento após uma reconexão. A chave
+     * junta tabela + id + versão da linha, então um UPDATE legitimo depois de
+     * outro não e confundido com repeticao.
      */
     function isDuplicate(payload: RealtimePostgresChangesPayload<Record<string, unknown>>) {
       const record = (payload.new ?? payload.old ?? {}) as Record<string, unknown>;
@@ -114,7 +114,7 @@ export function useRealtime({
       if (state === "SUBSCRIBED") {
         setStatus("connected");
         // Sincroniza sempre que conecta, inclusive na primeira vez: e barato
-        // e cobre o intervalo entre o carregamento da pagina e o canal ficar
+        // e cobre o intervalo entre o carregamento da página e o canal ficar
         // pronto.
         onSyncRef.current?.();
         return;

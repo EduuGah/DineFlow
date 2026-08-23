@@ -9,11 +9,11 @@ import { DomainError, friendlyError, isDuplicateRequest } from "@/lib/errors";
 describe("traducao de erro", () => {
   it("traduz os codigos dos triggers do dominio", () => {
     expect(friendlyError({ code: "DF003", message: "produto indisponivel" })).toContain(
-      "indisponivel",
+      "indisponível",
     );
-    expect(friendlyError({ code: "DF002", message: "sem permissao" })).toContain("permissao");
+    expect(friendlyError({ code: "DF002", message: "sem permissao" })).toContain("permissão");
     expect(friendlyError({ code: "DF006", message: "ja vinculada" })).toContain(
-      "ja esta vinculada",
+      "já está vinculada",
     );
   });
 
@@ -31,7 +31,7 @@ describe("traducao de erro", () => {
       message: 'duplicate key value violates unique constraint "tables_restaurant_id_number_key"',
     };
 
-    expect(friendlyError(erro)).toBe("Ja existe uma mesa com esse numero.");
+    expect(friendlyError(erro)).toBe("Já existe uma mesa com esse número.");
   });
 
   it("nao revela detalhe de infraestrutura numa violacao de RLS", () => {
@@ -39,12 +39,12 @@ describe("traducao de erro", () => {
       message: "new row violates row-level security policy for table orders",
     });
 
-    expect(mensagem).toBe("Voce nao tem acesso a esse dado.");
+    expect(mensagem).toBe("Você não tem acesso a esse dado.");
     expect(mensagem).not.toContain("row-level");
   });
 
   it("reconhece falta de conexao", () => {
-    expect(friendlyError({ message: "Failed to fetch" })).toMatch(/sem conexao/i);
+    expect(friendlyError({ message: "Failed to fetch" })).toMatch(/sem conexão/i);
   });
 
   it("repassa a mensagem de um DomainError", () => {
@@ -53,7 +53,7 @@ describe("traducao de erro", () => {
 
   it("cai numa mensagem neutra quando nao reconhece o erro", () => {
     expect(friendlyError(new Error("algo estranho"))).toBe(
-      "Nao foi possivel concluir a operacao. Tente de novo.",
+      "Não foi possível concluir a operação. Tente de novo.",
     );
   });
 });

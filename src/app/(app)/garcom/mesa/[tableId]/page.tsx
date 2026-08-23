@@ -18,8 +18,8 @@ export default async function TableOrderPage({ params }: { params: Promise<{ tab
   const session = await requireActiveRestaurant("orders.create");
   const supabase = await createClient();
 
-  // O RLS ja limita a consulta ao restaurante do usuario: um tableId de outro
-  // tenant simplesmente nao existe daqui, e vira 404.
+  // O RLS já limita a consulta ao restaurante do usuário: um tableId de outro
+  // tenant simplesmente não existe daqui, e vira 404.
   const { data: table } = await supabase
     .from("tables")
     .select("id, number, name, capacity")
@@ -39,7 +39,7 @@ export default async function TableOrderPage({ params }: { params: Promise<{ tab
     <PageContainer wide>
       <PageHeader
         backHref="/garcom"
-        backLabel="Salao"
+        backLabel="Salão"
         title={`Mesa ${table.number}${table.name ? ` - ${table.name}` : ""}`}
         description={
           openOrder && openOrder.status !== "draft"
@@ -59,11 +59,11 @@ export default async function TableOrderPage({ params }: { params: Promise<{ tab
       ) : (
         <EmptyState
           icon={<BookOpen className="size-8" />}
-          title="O cardapio ainda esta vazio"
+          title="O cardápio ainda esta vazio"
           description="Cadastre categorias e produtos para conseguir lancar pedidos."
           action={
             <Button asChild size="lg">
-              <Link href="/gerente/cardapio">Montar cardapio</Link>
+              <Link href="/gerente/cardapio">Montar cardápio</Link>
             </Button>
           }
         />

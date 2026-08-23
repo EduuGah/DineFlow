@@ -22,9 +22,9 @@ import type { Enums } from "@/types/database";
 type OrderSummary = { id: string; number: number; status: OrderStatus };
 
 /**
- * Botoes de acao de um pedido.
+ * Botoes de ação de um pedido.
  *
- * As opcoes vem da maquina de estados filtrada pelo papel -- a tela nunca
+ * As opções vem da maquina de estados filtrada pelo papel -- a tela nunca
  * mostra um botao que o banco vai recusar. Mesmo assim, o erro do servidor e
  * tratado: entre o render e o clique, outra pessoa pode ter movido o pedido.
  */
@@ -86,10 +86,10 @@ export function OrderActions({
             <Button
               size={size}
               variant="outline"
-              aria-label="Outras acoes"
+              aria-label="Outras ações"
               icon={<ChevronDown className="size-4" />}
             >
-              {primary ? "" : "Acoes"}
+              {primary ? "" : "Ações"}
             </Button>
           }
         >
@@ -122,10 +122,10 @@ export function OrderActions({
 }
 
 /**
- * Cancelamento com motivo obrigatorio (secao 17 do roadmap).
+ * Cancelamento com motivo obrigatório (secao 17 do roadmap).
  *
- * O motivo nao e burocracia: e o que permite ao gerente descobrir depois que
- * metade dos cancelamentos foi "produto indisponivel" num item so.
+ * O motivo não e burocracia: e o que permite ao gerente descobrir depois que
+ * metade dos cancelamentos foi "produto indisponível" num item só.
  */
 export function CancelOrderDialog({
   open,
@@ -145,9 +145,9 @@ export function CancelOrderDialog({
   async function handleCancel() {
     setSaving(true);
     try {
-      // Cancelamento nao entra na fila offline: precisa de confirmacao do
-      // servidor agora. Cancelar "no escuro" um prato que ja foi feito e pior
-      // do que avisar o garcom que a rede caiu.
+      // Cancelamento não entra na fila offline: precisa de confirmação do
+      // servidor agora. Cancelar "no escuro" um prato que já foi feito e pior
+      // do que avisar o garçom que a rede caiu.
       const { error } = await createClient()
         .from("orders")
         .update({
@@ -175,7 +175,7 @@ export function CancelOrderDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={`Cancelar pedido #${order.number}`}
-      description="O pedido sai da fila da cozinha e fica registrado no historico."
+      description="O pedido sai da fila da cozinha e fica registrado no histórico."
       size="sm"
       footer={
         <>
@@ -206,7 +206,7 @@ export function CancelOrderDialog({
         <Field
           label="Detalhes"
           htmlFor="cancel-note"
-          hint="Opcional, mas ajuda muito na hora de entender o relatorio."
+          hint="Opcional, mas ajuda muito na hora de entender o relatório."
         >
           <Textarea
             id="cancel-note"

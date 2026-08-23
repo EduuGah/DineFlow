@@ -6,6 +6,8 @@ import {
   orderItemSchema,
   productSchema,
   restaurantNameSchema,
+  signInSchema,
+  staffAccountSchema,
   tableSchema,
 } from "@/domain/schemas";
 
@@ -32,6 +34,46 @@ describe("convite de acesso", () => {
       false,
     );
     expect(invitationSchema.safeParse({ email: "a@b.com", role: "kitchen" }).success).toBe(true);
+  });
+});
+
+describe("acesso da equipe", () => {
+  const base = {
+    name: "João Pereira",
+    email: "joao@restaurante.com.br",
+    phone: undefined,
+    role: "waiter" as const,
+  };
+
+  it("exige senha de pelo menos 8 caracteres", () => {
+    // Comprimento acima de complexidade: senha complexa demais num restaurante
+    // termina anotada num papel no balcão.
+    expect(staffAccountSchema.safeParse({ ...base, password: "1234567" }).success).toBe(false);
+    expect(staffAccountSchema.safeParse({ ...base, password: "12345678" }).success).toBe(true);
+  });
+
+  it("não permite criar acesso de admin da plataforma", () => {
+    expect(
+      staffAccountSchema.safeParse({ ...base, role: "platform_admin", password: "12345678" })
+        .success,
+    ).toBe(false);
+  });
+
+  it("normaliza o e-mail usado como usuário", () => {
+    const parsed = staffAccountSchema.parse({
+      ...base,
+      email: "  Joao@Restaurante.COM  ",
+      password: "12345678",
+    });
+
+    expect(parsed.email).toBe("joao@restaurante.com");
+  });
+
+  it("aceita qualquer senha não vazia na entrada", () => {
+    // Validar comprimento no login vazaria a política de senha para quem
+    // ainda não tem conta.
+    expect(signInSchema.safeParse({ email: "a@b.com", password: "x" }).success).toBe(true);
+    expect(signInSchema.safeParse({ email: "a@b.com", password: "" }).success).toBe(false);
   });
 });
 

@@ -14,7 +14,7 @@ export const ORDER_STATUSES = [
   "cancelled",
 ] as const satisfies readonly OrderStatus[];
 
-/** Estados em que a comanda ainda ocupa a mesa e a operacao. */
+/** Estados em que a comanda ainda ocupa a mesa e a operação. */
 export const OPEN_ORDER_STATUSES = [
   "draft",
   "sent",
@@ -33,10 +33,10 @@ export const KITCHEN_STATUSES = [
 ] as const satisfies readonly OrderStatus[];
 
 /**
- * Camada central de transicoes (secao 15 do roadmap).
+ * Camada central de transições (secao 15 do roadmap).
  *
  * Este mapa e o espelho exato de `app.order_transition_allowed()` no banco. O
- * banco e a autoridade -- ele barra qualquer transicao invalida venha de onde
+ * banco e a autoridade -- ele barra qualquer transição inválida venha de onde
  * vier. Esta copia existe para a UI saber quais botoes mostrar sem precisar de
  * um round-trip, e o teste `state-machine-parity` garante que as duas nunca
  * divergem.
@@ -49,21 +49,21 @@ export const ORDER_TRANSITIONS: Record<OrderStatus, readonly OrderStatus[]> = {
   // ready -> preparing: a cozinha marcou pronto por engano e reabre
   // ready -> sent: um complemento entrou e a comanda volta para a fila
   ready: ["preparing", "delivered", "sent", "cancelled"],
-  // delivered -> ready: o garcom marcou entrega por engano
+  // delivered -> ready: o garçom marcou entrega por engano
   delivered: ["completed", "ready", "sent"],
   completed: [],
   cancelled: [],
 };
 
 /**
- * Quem pode fazer cada transicao. Espelha `app.order_transition_roles()`.
+ * Quem pode fazer cada transição. Espelha `app.order_transition_roles()`.
  *
  * A ordem das regras importa e e a mesma do SQL: a primeira que casar vence.
  */
 export function transitionRoles(from: OrderStatus, to: OrderStatus): readonly UserRole[] {
   if (to === "cancelled") {
-    // Enquanto a cozinha nao comecou, o garcom resolve sozinho. Depois que
-    // virou insumo gasto, so a gerencia -- ou a cozinha, que e quem descobre
+    // Enquanto a cozinha não começou, o garçom resolve sozinho. Depois que
+    // virou insumo gasto, só a gerencia -- ou a cozinha, que e quem descobre
     // que o produto acabou.
     if (from === "draft") return ["waiter", "manager", "admin"];
     if (from === "sent" || from === "received") return ["waiter", "kitchen", "manager", "admin"];
@@ -105,8 +105,8 @@ export function isFinal(status: OrderStatus): boolean {
 
 /**
  * Proximo passo natural do fluxo para o papel -- e o que vira o botao
- * primario na tela. A cozinha nao precisa escolher entre cinco acoes num
- * sabado a noite; ela precisa de um botao grande com a acao obvia.
+ * primario na tela. A cozinha não precisa escolher entre cinco ações num
+ * sabado a noite; ela precisa de um botao grande com a ação obvia.
  */
 export function primaryAction(
   status: OrderStatus,

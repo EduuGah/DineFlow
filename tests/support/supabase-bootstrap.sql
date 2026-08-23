@@ -61,6 +61,17 @@ create publication supabase_realtime;
 grant usage on schema public to anon, authenticated, service_role;
 grant usage on schema auth to anon, authenticated, service_role;
 
-alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+/*
+ * NAO concedemos privilegios padrao aqui, de proposito.
+ *
+ * Um projeto Supabase costuma vir com `alter default privileges` concedendo
+ * tudo em public para anon/authenticated/service_role. Reproduzir isso no teste
+ * mascarava um defeito real: as migrations nao concediam privilegio nenhum, e
+ * passavam porque o ambiente de teste concedia por elas. Em producao o app
+ * quebrava com "permission denied for table users".
+ *
+ * Deixando os privilegios padrao de fora, o teste exige que as migrations sejam
+ * autossuficientes -- que e o que torna o schema instalavel em qualquer
+ * Postgres, e nao so num projeto configurado do jeito certo.
+ */
 alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
-alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;

@@ -63,12 +63,12 @@ export function OrderHistory({
             onChange={(event) => applyFilter({ de: event.target.value })}
           />
         </Field>
-        <Field label="Ate" htmlFor="to">
+        <Field label="Até" htmlFor="to">
           <Input
             id="to"
             type="date"
             defaultValue={to}
-            onChange={(event) => applyFilter({ ate: event.target.value })}
+            onChange={(event) => applyFilter({ até: event.target.value })}
           />
         </Field>
         <Field label="Status" htmlFor="status">
@@ -102,7 +102,7 @@ export function OrderHistory({
             <tr>
               <Th>Pedido</Th>
               <Th>Mesa</Th>
-              <Th>Garcom</Th>
+              <Th>Garçom</Th>
               <Th>Status</Th>
               <Th align="center">Itens</Th>
               <Th align="right">Total</Th>
@@ -160,8 +160,8 @@ export function OrderHistory({
  * Detalhe com a linha do tempo (secao 18 do roadmap).
  *
  * "Onde esse pedido parou?" e a pergunta que o cliente real faz. A resposta
- * vem do audit_log, que o banco escreve por trigger -- nao depende de a
- * aplicacao ter lembrado de registrar.
+ * vem do audit_log, que o banco escreve por trigger -- não depende de a
+ * aplicação ter lembrado de registrar.
  */
 function OrderDetailDialog({
   order,
@@ -171,8 +171,8 @@ function OrderDetailDialog({
   onClose: () => void;
 }) {
   // A linha do tempo guarda o pedido a que pertence: assim trocar de pedido
-  // nao exige limpar o estado dentro do efeito, e a tela nunca mostra o
-  // historico do pedido anterior enquanto o novo carrega.
+  // não exige limpar o estado dentro do efeito, e a tela nunca mostra o
+  // histórico do pedido anterior enquanto o novo carrega.
   const [loaded, setLoaded] = useState<{
     orderId: string;
     logs: Tables<"audit_logs">[];

@@ -16,8 +16,8 @@ const WARN_AFTER_SECONDS = 8 * 60;
  * Comanda da cozinha.
  *
  * Regras de leitura a distancia (secao 37): quantidade em corpo grande a
- * esquerda, nome do prato em seguida, observacao SEMPRE destacada em amarelo.
- * "Sem cebola" nao pode competir visualmente com o resto -- e a linha que
+ * esquerda, nome do prato em seguida, observação SEMPRE destacada em amarelo.
+ * "Sem cebola" não pode competir visualmente com o resto -- e a linha que
  * causa prato devolvido.
  */
 export function OrderTicket({

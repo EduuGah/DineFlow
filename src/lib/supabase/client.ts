@@ -7,8 +7,8 @@ import type { Database } from "@/types/database";
 let cached: ReturnType<typeof createBrowserClient<Database>> | null = null;
 
 /**
- * Client do browser. Uma unica instancia por aba: cada `createBrowserClient`
- * abre o proprio canal de realtime, e varios canais para a mesma mesa e o
+ * Client do browser. Uma única instancia por aba: cada `createBrowserClient`
+ * abre o próprio canal de realtime, e varios canais para a mesma mesa e o
  * caminho mais rapido para eventos duplicados no KDS.
  */
 export function createClient() {

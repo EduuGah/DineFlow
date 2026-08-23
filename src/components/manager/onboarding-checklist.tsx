@@ -4,11 +4,11 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Checklist de configuracao (secoes 31 e 32 do roadmap).
+ * Checklist de configuração (secoes 31 e 32 do roadmap).
  *
- * O objetivo declarado e o restaurante conseguir comecar a operar sem falar
+ * O objetivo declarado e o restaurante conseguir começar a operar sem falar
  * com ninguem. Por isso a lista mostra o proximo passo concreto com link
- * direto, e some sozinha quando a configuracao minima esta feita.
+ * direto, e some sozinha quando a configuração mínima esta feita.
  */
 export function OnboardingChecklist({
   status,
@@ -23,14 +23,14 @@ export function OnboardingChecklist({
 }) {
   const steps = [
     {
-      label: "Cadastrar as mesas do salao",
+      label: "Cadastrar as mesas do salão",
       done: status.tables > 0,
       href: "/gerente/mesas",
       hint:
         status.tables > 0 ? `${status.tables} mesas cadastradas` : "Crie o intervalo de uma vez",
     },
     {
-      label: "Criar categorias do cardapio",
+      label: "Criar categorias do cardápio",
       done: status.categories > 0,
       href: "/gerente/cardapio",
       hint:
@@ -40,7 +40,7 @@ export function OnboardingChecklist({
       label: "Cadastrar os produtos",
       done: status.products > 0,
       href: "/gerente/cardapio",
-      hint: status.products > 0 ? `${status.products} produtos` : "Com nome e preco",
+      hint: status.products > 0 ? `${status.products} produtos` : "Com nome e preço",
     },
     {
       label: "Criar os acessos da equipe",
@@ -48,8 +48,8 @@ export function OnboardingChecklist({
       href: "/gerente/funcionarios",
       hint:
         status.waiters + status.kitchen > 0
-          ? `${status.waiters} no salao, ${status.kitchen} na cozinha`
-          : "Pelo menos um garcom e uma cozinha",
+          ? `${status.waiters} no salão, ${status.kitchen} na cozinha`
+          : "Pelo menos um garçom e uma cozinha",
     },
   ];
 
@@ -58,7 +58,7 @@ export function OnboardingChecklist({
   return (
     <Card>
       <CardHeader
-        title="Falta pouco para comecar a operar"
+        title="Falta pouco para começar a operar"
         description={`${done} de ${steps.length} etapas concluidas`}
       />
       <CardBody className="flex flex-col gap-1">

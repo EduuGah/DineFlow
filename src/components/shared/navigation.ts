@@ -18,14 +18,14 @@ export type NavItem = {
   permission: Permission;
   /** Aparece na barra inferior do celular. */
   primary?: boolean;
-  /** Marca o item como ativo tambem nas subrotas. */
+  /** Marca o item como ativo também nas subrotas. */
   match?: (pathname: string) => boolean;
 };
 
 const ITEMS: NavItem[] = [
   {
     href: "/garcom",
-    label: "Salao",
+    label: "Salão",
     icon: LayoutGrid,
     permission: "orders.create",
     primary: true,
@@ -55,7 +55,7 @@ const ITEMS: NavItem[] = [
   },
   {
     href: "/gerente/cardapio",
-    label: "Cardapio",
+    label: "Cardápio",
     icon: BookOpen,
     permission: "menu.manage",
     primary: true,
@@ -74,7 +74,7 @@ const ITEMS: NavItem[] = [
   },
   {
     href: "/gerente/pedidos",
-    label: "Historico",
+    label: "Histórico",
     icon: ClipboardList,
     permission: "reports.view",
   },
@@ -91,9 +91,9 @@ export function navigationFor(role: UserRole): NavItem[] {
 }
 
 /**
- * Barra inferior do celular: no maximo cinco itens.
+ * Barra inferior do celular: no máximo cinco itens.
  *
- * Mais que isso e alvo pequeno demais para quem esta com uma mao ocupada -- o
+ * Mais que isso e alvo pequeno demais para quem está com uma mao ocupada -- o
  * resto vai para o menu do perfil.
  */
 export function primaryNavigationFor(role: UserRole): NavItem[] {

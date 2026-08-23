@@ -3,33 +3,45 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { assertRestaurantPermission } from "./guard";
-import { invitationSchema, staffUpdateSchema } from "@/domain/schemas";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { staffAccountSchema, staffUpdateSchema } from "@/domain/schemas";
 import { fail, ok, type ActionResult } from "@/lib/errors";
 
 /**
- * Convite de acesso.
+ * Cria o acesso de um funcionário: usuário e senha.
  *
- * Com login via Google o gerente nao cria credencial nenhuma -- ele autoriza
- * um e-mail. Quando a pessoa entra com a conta Google correspondente, o
- * trigger `app.handle_new_auth_user` encontra o convite e faz o vinculo.
+ * O restaurante não deveria depender de o garçom ter conta Google de trabalho.
+ * Quem dá acesso é o administrador, e a credencial nasce pronta -- basta
+ * entregar e-mail e senha para a pessoa.
  *
- * O `restaurant_id` vem da SESSAO, nunca do formulario: sem isso a action
- * viraria um meio de inserir funcionario em qualquer restaurante da
- * plataforma.
+ * A ordem aqui é o que torna seguro usar a chave que ignora o RLS:
+ *
+ *   1. assertRestaurantPermission confirma que quem chamou é gerência;
+ *   2. restaurant_id vem da SESSÃO, nunca do formulário;
+ *   3. só então a chave privilegiada entra, com o escopo já definido.
+ *
+ * Inverter esses passos transformaria esta action num criador de usuários para
+ * qualquer restaurante da plataforma.
  */
-export async function inviteStaff(_prev: unknown, formData: FormData): Promise<ActionResult<null>> {
+export async function createStaffAccount(
+  _prev: unknown,
+  formData: FormData,
+): Promise<ActionResult<null>> {
   try {
     const session = await assertRestaurantPermission("staff.manage");
 
-    const parsed = invitationSchema.safeParse({
+    const parsed = staffAccountSchema.safeParse({
+      name: formData.get("name"),
       email: formData.get("email"),
       role: formData.get("role"),
+      phone: formData.get("phone") || undefined,
+      password: formData.get("password"),
     });
 
     if (!parsed.success) {
       return {
         ok: false,
-        error: "Confira os dados do convite.",
+        error: "Confira os dados do funcionário.",
         fieldErrors: parsed.error.flatten().fieldErrors,
       };
     }
@@ -38,12 +50,11 @@ export async function inviteStaff(_prev: unknown, formData: FormData): Promise<A
     if (parsed.data.role === "admin" && session.profile.role !== "admin") {
       return {
         ok: false,
-        error: "Apenas o administrador do restaurante pode convidar outro admin.",
+        error: "Apenas o administrador do restaurante pode criar outro admin.",
       };
     }
 
     const supabase = await createClient();
-
     const { data: existing } = await supabase
       .from("users")
       .select("id")
@@ -51,24 +62,41 @@ export async function inviteStaff(_prev: unknown, formData: FormData): Promise<A
       .maybeSingle();
 
     if (existing) {
-      return { ok: false, error: "Esse e-mail ja faz parte da equipe." };
+      return { ok: false, error: "Esse e-mail já faz parte da equipe." };
     }
 
-    const { error } = await supabase.from("staff_invitations").insert({
-      restaurant_id: session.restaurantId,
+    const admin = createAdminClient();
+    const { error } = await admin.auth.admin.createUser({
       email: parsed.data.email,
-      role: parsed.data.role,
-      invited_by: session.userId,
+      password: parsed.data.password,
+      // Sem etapa de confirmação: quem confirma o e-mail é o gerente, ao
+      // digitá-lo. O garçom precisa entrar hoje, não abrir caixa de entrada.
+      email_confirm: true,
+      user_metadata: { name: parsed.data.name },
+      // app_metadata só pode ser escrito pela service_role. É daí que o trigger
+      // app.handle_new_auth_user() lê o tenant e o papel -- por isso ninguém
+      // consegue se auto-vincular a um restaurante.
+      app_metadata: {
+        restaurant_id: session.restaurantId,
+        role: parsed.data.role,
+      },
     });
 
     if (error) {
-      if (error.code === "23505") {
+      if (error.message.toLowerCase().includes("already been registered")) {
         return {
           ok: false,
-          error: "Ja existe um convite pendente para esse e-mail.",
+          error: "Esse e-mail já tem conta no DineFlow. Use outro para este funcionário.",
         };
       }
       return fail(error);
+    }
+
+    if (parsed.data.phone) {
+      await supabase
+        .from("users")
+        .update({ phone: parsed.data.phone })
+        .eq("email", parsed.data.email);
     }
 
     revalidatePath("/gerente/funcionarios");
@@ -78,20 +106,35 @@ export async function inviteStaff(_prev: unknown, formData: FormData): Promise<A
   }
 }
 
-export async function revokeInvitation(id: string): Promise<ActionResult<null>> {
+/** Define uma nova senha para um funcionário do próprio restaurante. */
+export async function resetStaffPassword(
+  id: string,
+  password: string,
+): Promise<ActionResult<null>> {
   try {
-    await assertRestaurantPermission("staff.manage");
+    const session = await assertRestaurantPermission("staff.manage");
 
+    if (password.length < 8) {
+      return { ok: false, error: "A senha precisa ter pelo menos 8 caracteres." };
+    }
+
+    // Confirma pelo client COM RLS que o funcionário é deste restaurante,
+    // antes de usar a chave que ignora o RLS.
     const supabase = await createClient();
-    const { error } = await supabase
-      .from("staff_invitations")
-      .delete()
+    const { data: target } = await supabase
+      .from("users")
+      .select("id, restaurant_id")
       .eq("id", id)
-      .is("accepted_at", null);
+      .maybeSingle();
 
+    if (!target || target.restaurant_id !== session.restaurantId) {
+      return { ok: false, error: "Funcionário não encontrado." };
+    }
+
+    const admin = createAdminClient();
+    const { error } = await admin.auth.admin.updateUserById(id, { password });
     if (error) return fail(error);
 
-    revalidatePath("/gerente/funcionarios");
     return ok(null);
   } catch (error) {
     return fail(error);
@@ -113,7 +156,7 @@ export async function updateStaff(_prev: unknown, formData: FormData): Promise<A
     if (!parsed.success) {
       return {
         ok: false,
-        error: "Confira os dados do funcionario.",
+        error: "Confira os dados do funcionário.",
         fieldErrors: parsed.error.flatten().fieldErrors,
       };
     }
@@ -125,7 +168,7 @@ export async function updateStaff(_prev: unknown, formData: FormData): Promise<A
     // Um gerente rebaixando a si mesmo ficaria sem ninguem para gerenciar a
     // equipe; a saida e outro admin fazer isso.
     if (id === session.userId && parsed.data.role !== session.profile.role) {
-      return { ok: false, error: "Voce nao pode alterar o proprio papel." };
+      return { ok: false, error: "Você não pode alterar o próprio papel." };
     }
 
     const supabase = await createClient();
@@ -151,15 +194,15 @@ export async function updateStaff(_prev: unknown, formData: FormData): Promise<A
 /**
  * Desativa em vez de excluir.
  *
- * O funcionario aparece em pedidos e logs de meses atras; apaga-lo deixaria
- * buracos no historico que o restaurante precisa manter.
+ * O funcionário aparece em pedidos e logs de meses atrás; apaga-lo deixaria
+ * buracos no histórico que o restaurante precisa manter.
  */
 export async function deactivateStaff(id: string): Promise<ActionResult<null>> {
   try {
     const session = await assertRestaurantPermission("staff.manage");
 
     if (id === session.userId) {
-      return { ok: false, error: "Voce nao pode desativar o proprio acesso." };
+      return { ok: false, error: "Você não pode desativar o próprio acesso." };
     }
 
     const supabase = await createClient();

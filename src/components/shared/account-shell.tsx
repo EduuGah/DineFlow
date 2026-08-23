@@ -1,16 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { ChefHat, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
+import { Logo } from "@/components/shared/logo";
 import { signOut } from "@/server/actions/auth";
 import type { UserRole } from "@/domain/permissions";
 import { ROLE_LABELS } from "@/domain/labels";
 import { Button } from "@/components/ui/button";
 
 /**
- * Casca minima das telas de conta. Sem navegacao operacional de proposito:
- * quem cai aqui esta bloqueado, sem restaurante ou fora da operacao, e mostrar
- * atalhos para telas que vao recusa-lo so gera frustracao.
+ * Casca mínima das telas de conta. Sem navegação operacional de proposito:
+ * quem cai aqui está bloqueado, sem restaurante ou fora da operação, e mostrar
+ * atalhos para telas que vao recusa-lo só gera frustracao.
  */
 export function AccountShell({
   user,
@@ -23,9 +24,7 @@ export function AccountShell({
     <div className="bg-background flex min-h-dvh flex-col">
       <header className="border-border bg-surface flex h-14 items-center justify-between gap-3 border-b px-4 sm:px-6">
         <Link href="/inicio" className="flex min-w-0 items-center gap-2">
-          <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-lg">
-            <ChefHat className="size-4" />
-          </span>
+          <Logo className="size-8" />
           <span className="text-foreground truncate text-sm font-semibold">
             {user.restaurantName ?? "DineFlow"}
           </span>

@@ -10,12 +10,12 @@ export type Profile = Tables<"users">;
 export type Restaurant = Tables<"restaurants">;
 
 /**
- * Sessao do usuario.
+ * Sessão do usuário.
  *
  * `profile` e nulo de propósito: com login via Google existe um estado real e
- * legitimo em que a pessoa esta autenticada mas ainda nao pertence a nenhum
+ * legitimo em que a pessoa esta autenticada mas ainda não pertence a nenhum
  * restaurante -- o dono no primeiro acesso, antes de cadastrar a casa. Tratar
- * isso como "sem sessao" jogaria essa pessoa de volta para o login num laco.
+ * isso como "sem sessão" jogaria essa pessoa de volta para o login num laco.
  */
 export type Session = {
   userId: string;
@@ -25,19 +25,19 @@ export type Session = {
   /**
    * Falha ao ler perfil ou restaurante, quando houve.
    *
-   * Nulo significa "a leitura deu certo" -- e nao "encontrou algo". Uma sessao
+   * Nulo significa "a leitura deu certo" -- e não "encontrou algo". Uma sessão
    * sem perfil e com error nulo e um primeiro acesso legitimo; com error
-   * preenchido e um problema a ser mostrado, nao um cadastro a ser pedido.
+   * preenchido e um problema a ser mostrado, não um cadastro a ser pedido.
    */
   error: string | null;
 };
 
-/** Sessao com perfil garantido, para as telas de operacao. */
+/** Sessão com perfil garantido, para as telas de operação. */
 export type ActiveSession = Session & { profile: Profile };
 
 /**
  * `cache()` do React deduplica dentro de uma mesma renderizacao: o layout, a
- * pagina e cada Server Component podem chamar a vontade sem multiplicar
+ * página e cada Server Component podem chamar a vontade sem multiplicar
  * queries.
  */
 export const getSession = cache(async (): Promise<Session | null> => {
@@ -60,17 +60,17 @@ export const getSession = cache(async (): Promise<Session | null> => {
     : { data: null, error: null };
 
   /*
-   * "A consulta falhou" e "o registro nao existe" sao fatos diferentes.
+   * "A consulta falhou" e "o registro não existe" são fatos diferentes.
    *
-   * Ignorar o erro e ficar so com `data: null` colapsava os dois: uma falha de
-   * leitura virava "essa conta nao tem restaurante", e a pessoa recebia a tela
-   * de cadastro tendo um restaurante ativo no banco. Quem le a sessao precisa
+   * Ignorar o erro e ficar só com `data: null` colapsava os dois: uma falha de
+   * leitura virava "essa conta não tem restaurante", e a pessoa recebia a tela
+   * de cadastro tendo um restaurante ativo no banco. Quem le a sessão precisa
    * poder distinguir -- e dizer isso na tela.
    */
   const error = profileError ?? restaurantError;
 
   if (error) {
-    console.error("[dineflow] falha ao carregar a sessao:", error.code, error.message);
+    console.error("[dineflow] falha ao carregar a sessão:", error.code, error.message);
   }
 
   return {
@@ -82,7 +82,7 @@ export const getSession = cache(async (): Promise<Session | null> => {
   };
 });
 
-/** Exige apenas estar autenticado. Sem sessao, manda para o login. */
+/** Exige apenas estar autenticado. Sem sessão, manda para o login. */
 export async function requireSession(nextPath?: string): Promise<Session> {
   const session = await getSession();
 
@@ -99,7 +99,7 @@ export async function requireSession(nextPath?: string): Promise<Session> {
 }
 
 /**
- * Exige vinculo com um restaurante. Quem ainda nao tem vai para /inicio, que
+ * Exige vínculo com um restaurante. Quem ainda não tem vai para /inicio, que
  * oferece cadastrar a casa ou explica que falta o convite do gerente.
  */
 export async function requireProfile(): Promise<ActiveSession> {
@@ -112,7 +112,7 @@ export async function requireProfile(): Promise<ActiveSession> {
   return session as ActiveSession;
 }
 
-/** Exige sessao com uma permissao. Sem ela, volta para a home do papel. */
+/** Exige sessão com uma permissão. Sem ela, volta para a home do papel. */
 export async function requirePermission(permission: Permission): Promise<ActiveSession> {
   const session = await requireProfile();
 
@@ -125,7 +125,7 @@ export async function requirePermission(permission: Permission): Promise<ActiveS
 
 /**
  * Exige um restaurante operacional. Restaurante suspenso perde acesso a dado
- * pelo RLS, entao a UI precisa parar antes e explicar o motivo.
+ * pelo RLS, então a UI precisa parar antes e explicar o motivo.
  */
 export async function requireActiveRestaurant(
   permission?: Permission,

@@ -74,7 +74,7 @@ export default async function ManagerDashboardPage() {
         description="Numeros do movimento de hoje, atualizados a cada carregamento."
         action={
           <Button asChild variant="outline">
-            <Link href="/gerente/pedidos">Ver historico</Link>
+            <Link href="/gerente/pedidos">Ver histórico</Link>
           </Button>
         }
       />
@@ -100,14 +100,14 @@ export default async function ManagerDashboardPage() {
           value={summary.orders_ready ?? 0}
           tone="success"
           icon={<ChefHat className="size-5" />}
-          hint="esperando o garcom"
+          hint="esperando o garçom"
         />
         <StatCard
           label="Cancelados"
           value={summary.orders_cancelled ?? 0}
           tone={summary.orders_cancelled > 0 ? "danger" : "neutral"}
           icon={<Ban className="size-5" />}
-          hint="veja os motivos no historico"
+          hint="veja os motivos no histórico"
         />
       </section>
 
@@ -120,7 +120,7 @@ export default async function ManagerDashboardPage() {
           hint="pedidos entregues e finalizados"
         />
         <StatCard
-          label="Ticket medio"
+          label="Ticket médio"
           value={formatCurrency(summary.average_ticket ?? 0)}
           icon={<TrendingUp className="size-5" />}
         />
@@ -139,27 +139,27 @@ export default async function ManagerDashboardPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader
-            title="Tempo medio de cada etapa"
+            title="Tempo médio de cada etapa"
             description="Onde o pedido esta demorando hoje."
           />
           <CardBody className="flex flex-col gap-3">
             <TimingRow
-              label="Do lancamento ate o envio"
-              hint="quanto tempo o garcom leva montando a comanda"
+              label="Do lancamento até o envio"
+              hint="quanto tempo o garçom leva montando a comanda"
               seconds={summary.seconds_to_send}
             />
             <TimingRow
-              label="Do envio ate a cozinha comecar"
+              label="Do envio até a cozinha começar"
               hint="fila de espera da cozinha"
               seconds={summary.seconds_to_start}
             />
             <TimingRow
               label="Preparo"
-              hint="do inicio ate ficar pronto"
+              hint="do inicio até ficar pronto"
               seconds={summary.seconds_to_prepare}
             />
             <TimingRow
-              label="Do pronto ate a entrega"
+              label="Do pronto até a entrega"
               hint="prato parado no balcao"
               seconds={summary.seconds_to_deliver}
             />
@@ -172,7 +172,7 @@ export default async function ManagerDashboardPage() {
             {topProducts.length === 0 ? (
               <EmptyState
                 title="Nenhum item vendido ainda"
-                description="Os produtos mais pedidos aparecem aqui assim que o movimento comecar."
+                description="Os produtos mais pedidos aparecem aqui assim que o movimento começar."
               />
             ) : (
               <ol className="flex flex-col gap-3">

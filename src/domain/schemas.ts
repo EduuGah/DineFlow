@@ -2,7 +2,7 @@ import { z } from "zod";
 
 /**
  * Validacao de entrada. Roda no servidor (Server Actions) e e reaproveitada no
- * cliente so para dar feedback antecipado -- a validacao que conta e a do
+ * cliente só para dar feedback antecipado -- a validação que conta e a do
  * servidor, somada as constraints do banco.
  */
 
@@ -11,13 +11,13 @@ const requiredText = (label: string, min: number, max: number) =>
     .string()
     .trim()
     .min(min, `${label} precisa ter pelo menos ${min} caracteres.`)
-    .max(max, `${label} pode ter no maximo ${max} caracteres.`);
+    .max(max, `${label} pode ter no máximo ${max} caracteres.`);
 
 const optionalText = (max: number) =>
   z
     .string()
     .trim()
-    .max(max, `Texto pode ter no maximo ${max} caracteres.`)
+    .max(max, `Texto pode ter no máximo ${max} caracteres.`)
     .optional()
     .transform((value) => (value ? value : null));
 
@@ -25,8 +25,8 @@ const optionalText = (max: number) =>
  * Limpa ANTES de validar.
  *
  * O autocompletar do teclado no celular costuma acrescentar um espaco no fim,
- * e maiusculas no comeco. Validar primeiro faria o garcom levar "e-mail
- * invalido" por causa de um espaco que ele nem consegue ver.
+ * e maiusculas no começo. Validar primeiro faria o garçom levar "e-mail
+ * inválido" por causa de um espaco que ele nem consegue ver.
  */
 export const emailSchema = z
   .string()
@@ -38,6 +38,28 @@ export const restaurantNameSchema = z.object({
   name: requiredText("O nome do restaurante", 2, 120),
 });
 
+// Política de senha (seção 24): comprimento acima de complexidade. Senha
+// complexa demais num restaurante termina anotada num papel no balcão.
+export const passwordSchema = z
+  .string()
+  .min(8, "A senha precisa ter pelo menos 8 caracteres.")
+  .max(72, "A senha pode ter no máximo 72 caracteres.");
+
+export const signInSchema = z.object({
+  email: emailSchema,
+  password: z.string().min(1, "Informe sua senha."),
+});
+
+export const staffAccountSchema = z.object({
+  name: requiredText("O nome do funcionário", 2, 120),
+  email: emailSchema,
+  role: z.enum(["waiter", "kitchen", "manager", "admin"], {
+    error: "Selecione um papel válido.",
+  }),
+  phone: optionalText(20),
+  password: passwordSchema,
+});
+
 export const invitationSchema = z.object({
   email: emailSchema,
   role: z.enum(["waiter", "kitchen", "manager", "admin"], {
@@ -46,21 +68,21 @@ export const invitationSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
-// Configuracao do restaurante
+// Configuração do restaurante
 // ---------------------------------------------------------------------------
 
 export const tableSchema = z.object({
   number: z.coerce
     .number()
-    .int("O numero da mesa precisa ser inteiro.")
-    .min(1, "O numero da mesa comeca em 1.")
-    .max(9999, "Numero de mesa muito alto."),
+    .int("O número da mesa precisa ser inteiro.")
+    .min(1, "O número da mesa começa em 1.")
+    .max(9999, "Número de mesa muito alto."),
   name: optionalText(60),
   capacity: z.coerce
     .number()
     .int()
     .min(1, "A mesa precisa comportar ao menos 1 pessoa.")
-    .max(50, "Capacidade maxima de 50 lugares."),
+    .max(50, "Capacidade máxima de 50 lugares."),
   area: optionalText(60),
   active: z.boolean().default(true),
 });
@@ -78,8 +100,8 @@ export const productSchema = z.object({
   categoryId: z.uuid("Selecione uma categoria.").nullable(),
   price: z.coerce
     .number()
-    .min(0, "O preco nao pode ser negativo.")
-    .max(99999.99, "Preco acima do limite."),
+    .min(0, "O preço não pode ser negativo.")
+    .max(99999.99, "Preço acima do limite."),
   prepMinutes: z.coerce
     .number()
     .int()
@@ -88,14 +110,14 @@ export const productSchema = z.object({
     .nullable()
     .optional()
     .transform((value) => value ?? null),
-  imageUrl: z.url("URL de imagem invalida.").nullable().optional().default(null),
+  imageUrl: z.url("URL de imagem inválida.").nullable().optional().default(null),
   position: z.coerce.number().int().min(0).default(0),
   active: z.boolean().default(true),
   available: z.boolean().default(true),
 });
 
 export const staffUpdateSchema = z.object({
-  name: requiredText("O nome do funcionario", 2, 120),
+  name: requiredText("O nome do funcionário", 2, 120),
   role: z.enum(["waiter", "kitchen", "manager", "admin"], {
     error: "Selecione um papel valido.",
   }),
@@ -108,12 +130,12 @@ export const staffUpdateSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const orderItemSchema = z.object({
-  productId: z.uuid("Produto invalido."),
+  productId: z.uuid("Produto inválido."),
   quantity: z.coerce
     .number()
     .int("A quantidade precisa ser inteira.")
-    .min(1, "A quantidade minima e 1.")
-    .max(99, "Quantidade maxima de 99 por item."),
+    .min(1, "A quantidade mínima e 1.")
+    .max(99, "Quantidade máxima de 99 por item."),
   notes: optionalText(280),
 });
 
@@ -137,10 +159,11 @@ export const cancelOrderSchema = z.object({
 export const restaurantSettingsSchema = z.object({
   name: requiredText("O nome do restaurante", 2, 120),
   timezone: z.string().min(3).max(60),
-  logoUrl: z.url("URL de logo invalida.").nullable().optional().default(null),
+  logoUrl: z.url("URL de logo inválida.").nullable().optional().default(null),
 });
 
 export type InvitationInput = z.infer<typeof invitationSchema>;
+export type StaffAccountInput = z.infer<typeof staffAccountSchema>;
 export type TableInput = z.infer<typeof tableSchema>;
 export type CategoryInput = z.infer<typeof categorySchema>;
 export type ProductInput = z.infer<typeof productSchema>;

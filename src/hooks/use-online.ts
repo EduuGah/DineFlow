@@ -12,14 +12,14 @@ function subscribe(onChange: () => void) {
 }
 
 /**
- * Estado da conexao do navegador.
+ * Estado da conexão do navegador.
  *
- * `navigator.onLine` so sabe se existe interface de rede -- num restaurante,
- * o Wi-Fi costuma continuar "conectado" enquanto o link nao entrega nada. Por
- * isso o estado real de sincronizacao vem do canal de realtime; este hook
+ * `navigator.onLine` só sabe se existe interface de rede -- num restaurante,
+ * o Wi-Fi costuma continuar "conectado" enquanto o link não entrega nada. Por
+ * isso o estado real de sincronização vem do canal de realtime; este hook
  * cobre apenas o caso obvio (celular saiu do alcance).
  *
- * useSyncExternalStore em vez de useState + useEffect: navigator nao existe no
+ * useSyncExternalStore em vez de useState + useEffect: navigator não existe no
  * servidor, e o snapshot de servidor "online" evita divergencia de hidratacao.
  */
 export function useOnline(): boolean {

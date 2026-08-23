@@ -67,7 +67,7 @@ export type FieldProps = {
  * Envelope de campo com rotulo, dica e erro.
  *
  * O erro fica sempre logo abaixo do controle e com `role="alert"`: num
- * formulario preenchido as pressas, erro no topo da pagina passa batido.
+ * formulário preenchido as pressas, erro no topo da página passa batido.
  */
 export function Field({ label, htmlFor, hint, error, required, className, children }: FieldProps) {
   const message = Array.isArray(error) ? error[0] : error;

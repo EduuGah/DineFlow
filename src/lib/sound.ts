@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * Alerta sonoro da operacao.
+ * Alerta sonoro da operação.
  *
  * O som e sintetizado no Web Audio em vez de carregado de um arquivo: toca
- * mesmo com a internet caida, nao atrasa o primeiro carregamento e nao vira
+ * mesmo com a internet caida, não atrasa o primeiro carregamento e não vira
  * mais um asset para servir numa cozinha com Wi-Fi ruim.
  *
- * Navegador so libera audio depois de um gesto do usuario -- por isso
+ * Navegador só libera audio depois de um gesto do usuário -- por isso
  * `unlockAudio()` e chamado no primeiro toque da tela.
  */
 
@@ -60,7 +60,7 @@ export function subscribeSoundPreference(listener: () => void) {
   };
 }
 
-/** No servidor nao ha localStorage; assumimos ligado, que e o padrao. */
+/** No servidor não há localStorage; assumimos ligado, que e o padrao. */
 export function soundPreferenceServerSnapshot(): boolean {
   return true;
 }
@@ -73,7 +73,7 @@ const PATTERNS: Record<"newOrder" | "ready" | "alert", Tone[]> = {
     { frequency: 660, duration: 0.12, delay: 0 },
     { frequency: 880, duration: 0.16, delay: 0.13 },
   ],
-  // Tres tons curtos, mais agudos: corta o barulho do salao.
+  // Três tons curtos, mais agudos: corta o barulho do salão.
   ready: [
     { frequency: 880, duration: 0.1, delay: 0 },
     { frequency: 1046, duration: 0.1, delay: 0.11 },

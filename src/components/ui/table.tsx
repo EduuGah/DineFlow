@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Tabela do painel do gerente. Rola horizontalmente dentro do proprio
- * container: a pagina nunca ganha scroll lateral, nem em celular.
+ * Tabela do painel do gerente. Rola horizontalmente dentro do próprio
+ * container: a página nunca ganha scroll lateral, nem em celular.
  */
 export function DataTable({ children, className }: { children: ReactNode; className?: string }) {
   return (

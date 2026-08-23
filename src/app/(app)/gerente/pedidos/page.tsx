@@ -7,7 +7,7 @@ import { PageContainer, PageHeader } from "@/components/shared/page-header";
 import { OrderHistory } from "@/components/manager/order-history";
 import { SkeletonList } from "@/components/ui/feedback";
 
-export const metadata: Metadata = { title: "Historico de pedidos" };
+export const metadata: Metadata = { title: "Histórico de pedidos" };
 export const dynamic = "force-dynamic";
 
 /** Sete dias e a janela que responde "como foi a semana?" sem paginar. */
@@ -38,7 +38,7 @@ export default async function OrderHistoryPage({
   return (
     <PageContainer wide>
       <PageHeader
-        title="Historico de pedidos"
+        title="Histórico de pedidos"
         description="Todo pedido enviado fica aqui, inclusive os cancelados."
       />
       <Suspense fallback={<SkeletonList rows={5} />}>

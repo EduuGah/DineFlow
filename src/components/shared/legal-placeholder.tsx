@@ -3,9 +3,9 @@ import { FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 /**
- * Documento juridico ainda nao publicado.
+ * Documento juridico ainda não publicado.
  *
- * Melhor uma pagina honesta do que um 404 num link do rodape -- ou, pior, um
+ * Melhor uma página honesta do que um 404 num link do rodape -- ou, pior, um
  * texto legal inventado. O conteudo definitivo entra antes do lancamento
  * comercial (secao 25 do roadmap).
  */

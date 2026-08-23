@@ -3,10 +3,10 @@ import type { Enums } from "@/types/database";
 export type UserRole = Enums<"user_role">;
 
 /**
- * Permissoes por papel (secao 1.3 do roadmap).
+ * Permissões por papel (secao 1.3 do roadmap).
  *
  * Esta tabela decide o que aparece na tela e qual rota cada papel pode abrir.
- * Ela NAO e a fronteira de seguranca: quem barra escrita indevida e o RLS mais
+ * Ela NAO e a fronteira de segurança: quem barra escrita indevida e o RLS mais
  * os triggers do banco. Manter as duas alinhadas evita mostrar um botao que
  * vai falhar -- mas mesmo que divirjam, o banco continua correto.
  */
@@ -92,9 +92,9 @@ export function isManagerRole(role: UserRole | null | undefined): boolean {
  *
  * Destino de LINK, nunca de redirecionamento.
  *
- * A distincao importa: uma versao anterior deste mapa era usada pelo proxy
- * para redirecionar automaticamente, lendo o papel do JWT (que so atualiza no
- * refresh do token). Quando isso discordava do que a pagina decidia lendo o
+ * A distincao importa: uma versão anterior deste mapa era usada pelo proxy
+ * para redirecionar automaticamente, lendo o papel do JWT (que só atualiza no
+ * refresh do token). Quando isso discordava do que a página decidia lendo o
  * banco, a tela pulava sozinha. Aqui o papel vem do banco, no momento de
  * renderizar o link, e ninguem e movido sem clicar.
  */

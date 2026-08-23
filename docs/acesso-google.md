@@ -1,4 +1,17 @@
-# Acesso com Google — configuração e URLs
+# Acesso ao sistema — dois caminhos
+
+O DineFlow tem duas portas de entrada, e a escolha não é de gosto:
+
+| Quem                     | Como entra                                 | Por quê                                                                                       |
+| ------------------------ | ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Dono / administrador     | Conta Google                               | Uma pessoa, uma vez. Sem senha para o sistema guardar                                         |
+| Equipe (garçom, cozinha) | Usuário e senha criados pelo administrador | Um garçom não tem conta Google de trabalho, e o restaurante não deveria depender de que tenha |
+
+O administrador cria o acesso em **Equipe → Criar acesso**: nome, e-mail, papel e senha inicial. A conta nasce pronta — basta entregar e-mail e senha. Se a pessoa esquecer a senha no meio do turno, o gerente redefine na hora pelo ícone de chave; não há fluxo por e-mail, que pressuporia o garçom com acesso à caixa de entrada durante o serviço.
+
+Isso exige a chave `SUPABASE_SERVICE_ROLE_KEY` no ambiente — é a única operação do sistema que precisa dela. Sem a chave o app roda normalmente; apenas o cadastro de equipe falha, com mensagem dizendo o que falta.
+
+## Configuração do Google — URLs
 
 O DineFlow não guarda senha. Toda entrada acontece pela conta Google da pessoa, o que remove do restaurante a tarefa de administrar credencial de garçom — e remove do sistema a chave `service_role`, que antes era necessária para criar essas credenciais.
 

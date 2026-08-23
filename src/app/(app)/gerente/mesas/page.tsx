@@ -15,7 +15,7 @@ export default async function ManagerTablesPage() {
 
   return (
     <PageContainer>
-      <PageHeader title="Mesas" description="O salao do garcom e montado a partir daqui." />
+      <PageHeader title="Mesas" description="O salão do garçom e montado a partir daqui." />
       <TablesManager tables={tables} />
     </PageContainer>
   );

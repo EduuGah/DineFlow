@@ -56,10 +56,10 @@ describe("tempo relativo", () => {
     vi.setSystemTime(new Date("2026-08-22T20:00:00Z"));
 
     expect(relativeTime("2026-08-22T19:59:40Z")).toBe("agora");
-    expect(relativeTime("2026-08-22T19:45:00Z")).toBe("ha 15 min");
-    expect(relativeTime("2026-08-22T17:00:00Z")).toBe("ha 3 h");
+    expect(relativeTime("2026-08-22T19:45:00Z")).toBe("há 15 min");
+    expect(relativeTime("2026-08-22T17:00:00Z")).toBe("há 3 h");
     expect(relativeTime("2026-08-21T18:00:00Z")).toBe("ontem");
-    expect(relativeTime("2026-08-19T18:00:00Z")).toBe("ha 3 dias");
+    expect(relativeTime("2026-08-19T18:00:00Z")).toBe("há 3 dias");
   });
 
   it("devolve vazio sem data, para nao imprimir 'Invalid Date' na tela", () => {

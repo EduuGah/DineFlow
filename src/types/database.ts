@@ -2,7 +2,7 @@
  * Tipos do banco no formato gerado pelo Supabase CLI.
  *
  * Regenere com `npm run db:types` sempre que criar uma migration -- este
- * arquivo e mantido a mao apenas enquanto nao ha um Supabase local rodando.
+ * arquivo e mantido a mao apenas enquanto não há um Supabase local rodando.
  */
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
@@ -285,10 +285,10 @@ export type Database = {
           restaurant_id: string;
           order_id: string;
           product_id: string;
-          /** Sobrescrito pelo trigger com o nome atual do cardapio. */
+          /** Sobrescrito pelo trigger com o nome atual do cardápio. */
           product_name: string;
           quantity: number;
-          /** Sobrescrito pelo trigger com o preco atual do cardapio. */
+          /** Sobrescrito pelo trigger com o preço atual do cardápio. */
           unit_price: number;
           notes?: string | null;
           /** Sobrescrito pelo trigger com a rodada aberta do pedido. */

@@ -6,10 +6,10 @@ import { RETURN_TO_COOKIE, safeReturnTo } from "@/lib/auth/return-to";
 /**
  * Retorno do login com Google.
  *
- * O Supabase manda a pessoa de volta para ca com um `code` de uso unico, que
- * trocamos por uma sessao. O verificador PKCE vive num cookie gravado quando o
- * login comecou, entao a troca so funciona no mesmo navegador que iniciou --
- * um `code` interceptado nao vale nada sozinho.
+ * O Supabase manda a pessoa de volta para ca com um `code` de uso único, que
+ * trocamos por uma sessão. O verificador PKCE vive num cookie gravado quando o
+ * login começou, então a troca só funciona no mesmo navegador que iniciou --
+ * um `code` interceptado não vale nada sozinho.
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = request.nextUrl;
@@ -35,11 +35,11 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    // O motivo real fica no log do servidor: a tela mostra so o suficiente
+    // O motivo real fica no log do servidor: a tela mostra só o suficiente
     // para a pessoa saber o que fazer, sem detalhe de infraestrutura.
-    console.error("[auth] falha ao trocar o code por sessao:", error.message);
+    console.error("[auth] falha ao trocar o code por sessão:", error.message);
 
-    // Verificador ausente e um caso a parte: nao adianta "tentar de novo" com
+    // Verificador ausente e um caso a parte: não adianta "tentar de novo" com
     // o mesmo link, a pessoa precisa recomecar o login.
     const semVerificador =
       error.message.toLowerCase().includes("verifier") ||

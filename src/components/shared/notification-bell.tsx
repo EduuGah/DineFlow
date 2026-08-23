@@ -19,9 +19,9 @@ export function NotificationBell({ userId }: { userId: string }) {
   const { items, loading, unreadCount, markAsRead, markAllAsRead } = useNotifications(userId);
 
   useEffect(() => {
-    // O navegador so libera audio apos um gesto. Prendemos o desbloqueio ao
+    // O navegador só libera audio após um gesto. Prendemos o desbloqueio ao
     // primeiro toque em qualquer lugar da tela para que o primeiro pedido
-    // pronto ja apite.
+    // pronto já apite.
     const unlock = () => unlockAudio();
     window.addEventListener("pointerdown", unlock, { once: true });
     return () => window.removeEventListener("pointerdown", unlock);
@@ -39,7 +39,7 @@ export function NotificationBell({ userId }: { userId: string }) {
         type="button"
         onClick={() => setOpen(true)}
         className="text-foreground-muted hover:bg-surface-muted hover:text-foreground relative flex size-11 items-center justify-center rounded-full"
-        aria-label={unreadCount > 0 ? `Notificacoes, ${unreadCount} nao lidas` : "Notificacoes"}
+        aria-label={unreadCount > 0 ? `Notificações, ${unreadCount} não lidas` : "Notificações"}
       >
         <Bell className="size-5" />
         {unreadCount > 0 ? (
@@ -52,8 +52,8 @@ export function NotificationBell({ userId }: { userId: string }) {
       <Dialog
         open={open}
         onOpenChange={setOpen}
-        title="Notificacoes"
-        description={unreadCount > 0 ? `${unreadCount} nao lidas` : "Tudo em dia"}
+        title="Notificações"
+        description={unreadCount > 0 ? `${unreadCount} não lidas` : "Tudo em dia"}
         footer={
           <>
             <Button
@@ -81,8 +81,8 @@ export function NotificationBell({ userId }: { userId: string }) {
         ) : items.length === 0 ? (
           <EmptyState
             icon={<BellOff className="size-8" />}
-            title="Nenhuma notificacao ainda"
-            description="Voce sera avisado aqui quando um pedido ficar pronto ou for cancelado."
+            title="Nenhuma notificação ainda"
+            description="Você sera avisado aqui quando um pedido ficar pronto ou for cancelado."
           />
         ) : (
           <ul className="flex flex-col gap-2">

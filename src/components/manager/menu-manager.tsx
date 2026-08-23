@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useActionSuccess } from "@/hooks/use-action-success";
 import { toast } from "sonner";
 import { BookOpen, Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
 import {
@@ -63,8 +64,8 @@ export function MenuManager({
     if (result.ok) {
       toast.success(
         product.available
-          ? `${product.name} marcado como indisponivel.`
-          : `${product.name} voltou ao cardapio.`,
+          ? `${product.name} marcado como indisponível.`
+          : `${product.name} voltou ao cardápio.`,
       );
       router.refresh();
     } else {
@@ -95,7 +96,7 @@ export function MenuManager({
         <EmptyState
           icon={<BookOpen className="size-8" />}
           title="Comece pelas categorias"
-          description="Crie as secoes do cardapio (entradas, pratos, bebidas) e depois cadastre os produtos dentro delas."
+          description="Crie as secoes do cardápio (entradas, pratos, bebidas) e depois cadastre os produtos dentro delas."
           action={
             <Button size="lg" onClick={() => setCategoryForm({ open: true, category: null })}>
               Criar primeira categoria
@@ -169,7 +170,7 @@ export function MenuManager({
 
                         {!product.available ? (
                           <Badge tone="danger" size="sm">
-                            Indisponivel
+                            Indisponível
                           </Badge>
                         ) : null}
 
@@ -183,8 +184,8 @@ export function MenuManager({
                             size="sm"
                             aria-label={
                               product.available
-                                ? `Marcar ${product.name} como indisponivel`
-                                : `Marcar ${product.name} como disponivel`
+                                ? `Marcar ${product.name} como indisponível`
+                                : `Marcar ${product.name} como disponível`
                             }
                             icon={
                               product.available ? (
@@ -222,7 +223,7 @@ export function MenuManager({
             <Card>
               <CardHeader
                 title="Sem categoria"
-                description="Estes produtos nao aparecem agrupados para o garcom."
+                description="Estes produtos não aparecem agrupados para o garçom."
               />
               <ul className="divide-border divide-y">
                 {grouped.orphans.map((product) => (
@@ -261,7 +262,7 @@ export function MenuManager({
         open={Boolean(removingCategory)}
         onOpenChange={(open) => !open && setRemovingCategory(null)}
         title={`Excluir a categoria "${removingCategory?.name}"?`}
-        description="Categorias com produtos nao podem ser excluidas."
+        description="Categorias com produtos não podem ser excluidas."
         confirmLabel="Excluir"
         destructive
         onConfirm={async () => {
@@ -278,7 +279,7 @@ export function MenuManager({
         open={Boolean(removingProduct)}
         onOpenChange={(open) => !open && setRemovingProduct(null)}
         title={`Excluir "${removingProduct?.name}"?`}
-        description="Se o produto ja foi vendido, ele sera apenas retirado do cardapio."
+        description="Se o produto já foi vendido, ele sera apenas retirado do cardápio."
         confirmLabel="Excluir"
         destructive
         onConfirm={async () => {
@@ -309,13 +310,11 @@ function CategoryFormDialog({
     null,
   );
 
-  useEffect(() => {
-    if (state?.ok) {
-      toast.success(category ? "Categoria atualizada." : "Categoria criada.");
-      onClose();
-      router.refresh();
-    }
-  }, [state, category, onClose, router]);
+  useActionSuccess(state, () => {
+    toast.success(category ? "Categoria atualizada." : "Categoria criada.");
+    onClose();
+    router.refresh();
+  });
 
   const fieldErrors = state?.ok === false ? state.fieldErrors : undefined;
 
@@ -356,7 +355,7 @@ function CategoryFormDialog({
           />
         </Field>
 
-        <Field label="Descricao" htmlFor="category-description" hint="Opcional.">
+        <Field label="Descrição" htmlFor="category-description" hint="Opcional.">
           <Input
             id="category-description"
             name="description"
@@ -365,7 +364,7 @@ function CategoryFormDialog({
           />
         </Field>
 
-        <Field label="Ordem" htmlFor="category-position" hint="Menor aparece primeiro no cardapio.">
+        <Field label="Ordem" htmlFor="category-position" hint="Menor aparece primeiro no cardápio.">
           <Input
             id="category-position"
             name="position"
@@ -402,13 +401,11 @@ function ProductFormDialog({
     null,
   );
 
-  useEffect(() => {
-    if (state?.ok) {
-      toast.success(product ? "Produto atualizado." : "Produto criado.");
-      onClose();
-      router.refresh();
-    }
-  }, [state, product, onClose, router]);
+  useActionSuccess(state, () => {
+    toast.success(product ? "Produto atualizado." : "Produto criado.");
+    onClose();
+    router.refresh();
+  });
 
   const fieldErrors = state?.ok === false ? state.fieldErrors : undefined;
 
@@ -449,7 +446,7 @@ function ProductFormDialog({
         </Field>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Preco" htmlFor="product-price" required error={fieldErrors?.price}>
+          <Field label="Preço" htmlFor="product-price" required error={fieldErrors?.price}>
             <Input
               id="product-price"
               name="price"
@@ -476,9 +473,9 @@ function ProductFormDialog({
         </div>
 
         <Field
-          label="Descricao"
+          label="Descrição"
           htmlFor="product-description"
-          hint="Opcional. Aparece para o garcom."
+          hint="Opcional. Aparece para o garçom."
         >
           <Textarea
             id="product-description"
@@ -516,12 +513,12 @@ function ProductFormDialog({
         <div className="flex flex-col gap-2.5">
           <label className="flex items-center gap-2.5">
             <Checkbox name="active" value="true" defaultChecked={product?.active ?? true} />
-            <span className="text-foreground text-sm">Ativo no cardapio</span>
+            <span className="text-foreground text-sm">Ativo no cardápio</span>
           </label>
           <label className="flex items-center gap-2.5">
             <Checkbox name="available" value="true" defaultChecked={product?.available ?? true} />
             <span className="text-foreground text-sm">
-              Disponivel hoje (desmarque quando acabar o ingrediente)
+              Disponível hoje (desmarque quando acabar o ingrediente)
             </span>
           </label>
         </div>
