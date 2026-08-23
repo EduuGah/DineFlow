@@ -1,69 +1,98 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Bell, ChefHat, ShieldCheck, WifiOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export default function Home() {
+const HIGHLIGHTS = [
+  {
+    icon: ChefHat,
+    title: "Do salao para a cozinha, na hora",
+    description:
+      "O garcom lanca o pedido no celular e a comanda aparece na tela da cozinha no mesmo instante, com as observacoes em destaque.",
+  },
+  {
+    icon: Bell,
+    title: "Ninguem mais grita 'saiu!'",
+    description:
+      "Quando a cozinha marca pronto, o garcom recebe aviso com som e o pedido sobe para o topo da lista dele.",
+  },
+  {
+    icon: WifiOff,
+    title: "Aguenta Wi-Fi de restaurante",
+    description:
+      "Se a conexao cair no meio do lancamento, o pedido fica guardado no aparelho e sai sozinho quando a rede voltar -- sem duplicar.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Cada restaurante com seus dados",
+    description:
+      "O isolamento entre restaurantes e garantido no banco de dados, nao na tela. Ninguem enxerga o movimento de ninguem.",
+  },
+];
+
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div className="bg-background flex min-h-dvh flex-col">
+      <header className="flex items-center justify-between px-6 py-5">
+        <span className="flex items-center gap-2">
+          <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-xl">
+            <ChefHat className="size-5" />
+          </span>
+          <span className="text-foreground text-lg font-bold tracking-tight">DineFlow</span>
+        </span>
+        <Button asChild variant="ghost">
+          <Link href="/entrar">Entrar</Link>
+        </Button>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-14 px-6 py-10">
+        <section className="flex flex-col gap-6">
+          <h1 className="text-foreground max-w-3xl text-3xl leading-tight font-bold tracking-tight sm:text-5xl">
+            Um restaurante tolera um sistema simples.
+            <span className="text-brand block">Nao tolera perder um pedido.</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-foreground-muted max-w-2xl text-base sm:text-lg">
+            O DineFlow cuida do caminho mais critico da operacao: garcom lanca, cozinha recebe,
+            cozinha marca pronto, garcom entrega. Tudo em tempo real, com historico de quem fez o
+            que.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
+              <Link href="/entrar">Cadastrar meu restaurante</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline">
+              <Link href="/entrar">Ja tenho conta</Link>
+            </Button>
+          </div>
+          <p className="text-foreground-subtle text-sm">14 dias de teste. Sem cartao.</p>
+        </section>
+
+        <section className="grid gap-4 sm:grid-cols-2">
+          {HIGHLIGHTS.map((item) => (
+            <article
+              key={item.title}
+              className="border-border bg-surface flex flex-col gap-2 rounded-[var(--radius-card)] border p-5"
+            >
+              <item.icon className="text-brand size-5" />
+              <h2 className="text-foreground text-base font-semibold">{item.title}</h2>
+              <p className="text-foreground-muted text-sm">{item.description}</p>
+            </article>
+          ))}
+        </section>
       </main>
+
+      <footer className="border-border text-foreground-subtle border-t px-6 py-6 text-sm">
+        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
+          <span>DineFlow</span>
+          <span className="flex gap-4">
+            <Link href="/termos" className="hover:text-foreground-muted">
+              Termos
+            </Link>
+            <Link href="/privacidade" className="hover:text-foreground-muted">
+              Privacidade
+            </Link>
+          </span>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -39,3 +39,18 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ambiente
+.env
+.env.local
+.env*.local
+
+# supabase
+supabase/.branches
+supabase/.temp
+supabase/.env
+
+# testes
+coverage
+playwright-report
+test-results
