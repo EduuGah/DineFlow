@@ -1,9 +1,10 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { restaurantNameSchema } from "@/domain/schemas";
-import { fail, ok, type ActionResult } from "@/lib/errors";
+import { fail, type ActionResult } from "@/lib/errors";
 
 /**
  * Cadastro do restaurante no primeiro acesso.
@@ -41,10 +42,24 @@ export async function createRestaurant(
 
     const { error } = await supabase.rpc("create_restaurant", { p_name: parsed.data.name });
     if (error) return fail(error);
-
-    revalidatePath("/", "layout");
-    return ok(null);
   } catch (error) {
     return fail(error);
   }
+
+  // O cache de rota ainda enxerga a conta sem restaurante; sem invalidar, a
+  // navegacao seguinte serviria a mesma tela de "cadastre seu restaurante".
+  revalidatePath("/", "layout");
+
+  /*
+   * O redirect fica FORA do try/catch de proposito.
+   *
+   * `redirect()` sinaliza para o Next lancando uma excecao especial. Dentro do
+   * bloco acima ela seria capturada pelo catch e virava "nao foi possivel
+   * concluir a operacao" -- com o restaurante ja criado no banco.
+   *
+   * Redirecionar aqui, e nao no cliente, tambem elimina a corrida entre
+   * `router.refresh()` e `router.push()`: a resposta da propria action ja
+   * carrega a navegacao.
+   */
+  redirect("/gerente");
 }

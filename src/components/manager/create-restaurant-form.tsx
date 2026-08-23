@@ -1,7 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { AlertCircle, ChefHat, MailQuestion } from "lucide-react";
 import { createRestaurant } from "@/server/actions/restaurant";
 import { Button } from "@/components/ui/button";
@@ -18,18 +17,12 @@ import type { ActionResult } from "@/lib/errors";
  * explicacao do convite logo abaixo, sem exigir escolha nenhuma na chegada.
  */
 export function CreateRestaurantForm({ email }: { email: string }) {
-  const router = useRouter();
+  // Em caso de sucesso a action redireciona no servidor e este componente nem
+  // chega a re-renderizar -- o estado aqui so existe para mostrar erro.
   const [state, action, pending] = useActionState<ActionResult<null> | null, FormData>(
     createRestaurant,
     null,
   );
-
-  useEffect(() => {
-    if (state?.ok) {
-      router.refresh();
-      router.push("/gerente");
-    }
-  }, [state, router]);
 
   const fieldErrors = state?.ok === false ? state.fieldErrors : undefined;
 
