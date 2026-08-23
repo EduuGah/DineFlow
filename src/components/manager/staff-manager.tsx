@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useActionSuccess } from "@/hooks/use-action-success";
 import { toast } from "sonner";
 import { MailPlus, Pencil, UserMinus, UserPlus, Users, X } from "lucide-react";
 import {
@@ -56,7 +57,7 @@ export function StaffManager({
         <Card>
           <CardHeader
             title="Convites aguardando o primeiro acesso"
-            description="O vinculo acontece quando a pessoa entrar com a conta Google desse e-mail."
+            description="O vínculo acontece quando a pessoa entrar com a conta Google desse e-mail."
           />
           <ul className="divide-border divide-y">
             {invitations.map((invitation) => (
@@ -91,8 +92,8 @@ export function StaffManager({
       {staff.length === 0 ? (
         <EmptyState
           icon={<Users className="size-8" />}
-          title="Nenhum funcionario na equipe"
-          description="Convide os e-mails do salao e da cozinha. Cada pessoa entra com a propria conta Google."
+          title="Nenhum funcionário na equipe"
+          description="Convide os e-mails do salão e da cozinha. Cada pessoa entra com a própria conta Google."
           action={
             <Button size="lg" onClick={() => setInviting(true)}>
               Convidar equipe
@@ -106,8 +107,8 @@ export function StaffManager({
               <Th>Nome</Th>
               <Th>E-mail</Th>
               <Th>Papel</Th>
-              <Th>Situacao</Th>
-              <Th align="right">Acoes</Th>
+              <Th>Situação</Th>
+              <Th align="right">Ações</Th>
             </tr>
           </thead>
           <tbody>
@@ -117,7 +118,7 @@ export function StaffManager({
                   {person.name}
                   {person.id === currentUserId ? (
                     <Badge tone="brand" size="sm" className="ml-2">
-                      voce
+                      você
                     </Badge>
                   ) : null}
                 </Td>
@@ -181,7 +182,7 @@ export function StaffManager({
         open={Boolean(deactivating)}
         onOpenChange={(open) => !open && setDeactivating(null)}
         title={`Desativar ${deactivating?.name}?`}
-        description="O acesso e bloqueado na hora, mas o historico de pedidos e mantido."
+        description="O acesso e bloqueado na hora, mas o histórico de pedidos e mantido."
         confirmLabel="Desativar"
         destructive
         onConfirm={async () => {
@@ -243,13 +244,11 @@ function InviteDialog({
     null,
   );
 
-  useEffect(() => {
-    if (state?.ok) {
-      toast.success("Convite criado. Peca para a pessoa entrar com o Google desse e-mail.");
-      onClose();
-      router.refresh();
-    }
-  }, [state, onClose, router]);
+  useActionSuccess(state, () => {
+    toast.success("Convite criado. Peca para a pessoa entrar com o Google desse e-mail.");
+    onClose();
+    router.refresh();
+  });
 
   const fieldErrors = state?.ok === false ? state.fieldErrors : undefined;
 
@@ -317,13 +316,11 @@ function EditStaffDialog({
     null,
   );
 
-  useEffect(() => {
-    if (state?.ok) {
-      toast.success("Funcionario atualizado.");
-      onClose();
-      router.refresh();
-    }
-  }, [state, onClose, router]);
+  useActionSuccess(state, () => {
+    toast.success("Funcionário atualizado.");
+    onClose();
+    router.refresh();
+  });
 
   const fieldErrors = state?.ok === false ? state.fieldErrors : undefined;
 
@@ -331,7 +328,7 @@ function EditStaffDialog({
     <Dialog
       open={Boolean(staff)}
       onOpenChange={(next) => !next && onClose()}
-      title={staff?.name ?? "Funcionario"}
+      title={staff?.name ?? "Funcionário"}
       description={staff?.email}
       footer={
         <>
@@ -375,7 +372,7 @@ function EditStaffDialog({
             <Input id="edit-phone" name="phone" defaultValue={staff.phone ?? ""} inputMode="tel" />
           </Field>
 
-          <Field label="Situacao" htmlFor="edit-status">
+          <Field label="Situação" htmlFor="edit-status">
             <Select id="edit-status" name="status" defaultValue={staff.status}>
               <option value="active">Ativo</option>
               <option value="inactive">Inativo</option>

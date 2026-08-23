@@ -8,9 +8,9 @@ import { ROLE_LABELS } from "@/domain/labels";
 import { Button } from "@/components/ui/button";
 
 /**
- * Casca minima das telas de conta. Sem navegacao operacional de proposito:
- * quem cai aqui esta bloqueado, sem restaurante ou fora da operacao, e mostrar
- * atalhos para telas que vao recusa-lo so gera frustracao.
+ * Casca mínima das telas de conta. Sem navegação operacional de proposito:
+ * quem cai aqui está bloqueado, sem restaurante ou fora da operação, e mostrar
+ * atalhos para telas que vao recusa-lo só gera frustracao.
  */
 export function AccountShell({
   user,

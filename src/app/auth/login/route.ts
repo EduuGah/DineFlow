@@ -7,16 +7,16 @@ import type { Database } from "@/types/database";
 /**
  * Inicio do login com Google.
  *
- * Precisa ser um Route Handler, e nao uma Server Action.
+ * Precisa ser um Route Handler, e não uma Server Action.
  *
  * `signInWithOAuth` gera o verificador PKCE e o guarda num cookie. Numa Server
  * Action que termina em `redirect()` para um dominio externo, esse cookie pode
- * nao chegar ao navegador -- e sem ele o `code` que o Google devolve nao pode
- * ser trocado por sessao, o que aparece para o usuario como "nao foi possivel
+ * não chegar ao navegador -- e sem ele o `code` que o Google devolve não pode
+ * ser trocado por sessão, o que aparece para o usuário como "não foi possível
  * concluir o login".
  *
- * Aqui os cookies sao gravados explicitamente na resposta de redirect, entao
- * eles saem junto com o 302 e estao disponiveis na volta.
+ * Aqui os cookies são gravados explicitamente na resposta de redirect, então
+ * eles saem junto com o 302 e estao disponíveis na volta.
  */
 export async function GET(request: NextRequest) {
   const { origin, searchParams } = request.nextUrl;
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       redirectTo: `${appUrl()}/auth/callback`,
       queryParams: {
         // Deixa a pessoa escolher a conta: em restaurante e comum o celular
-        // ja estar logado com a conta pessoal de outro funcionario.
+        // já estar logado com a conta pessoal de outro funcionário.
         prompt: "select_account",
       },
     },
@@ -61,12 +61,12 @@ export async function GET(request: NextRequest) {
   }
 
   /*
-   * O destino vai num cookie, e nao na query da URL de retorno, para a
+   * O destino vai num cookie, e não na query da URL de retorno, para a
    * `redirectTo` ficar FIXA -- exatamente uma URL por ambiente para liberar no
    * Supabase, sem curinga e sem query string.
    *
-   * sameSite lax e obrigatorio: a volta do Google e uma navegacao GET de
-   * primeiro nivel, e um cookie strict nao seria enviado nela.
+   * sameSite lax e obrigatório: a volta do Google e uma navegação GET de
+   * primeiro nível, e um cookie strict não seria enviado nela.
    */
   response.cookies.set(RETURN_TO_COOKIE, next, {
     httpOnly: true,

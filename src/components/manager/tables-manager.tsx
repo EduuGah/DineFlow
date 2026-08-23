@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useActionSuccess } from "@/hooks/use-action-success";
 import { toast } from "sonner";
 import { LayoutGrid, Layers, Pencil, Plus, Trash2 } from "lucide-react";
 import { createTablesInBulk, deleteTable, saveTable } from "@/server/actions/tables";
@@ -42,7 +43,7 @@ export function TablesManager({ tables }: { tables: Table[] }) {
         <EmptyState
           icon={<LayoutGrid className="size-8" />}
           title="Nenhuma mesa cadastrada"
-          description="Comece criando o intervalo de mesas do salao -- da mesa 1 ate a ultima."
+          description="Comece criando o intervalo de mesas do salão -- da mesa 1 até a última."
           action={
             <Button size="lg" onClick={() => setBulkOpen(true)}>
               Criar mesas
@@ -57,8 +58,8 @@ export function TablesManager({ tables }: { tables: Table[] }) {
               <Th>Nome</Th>
               <Th>Area</Th>
               <Th align="center">Lugares</Th>
-              <Th>Situacao</Th>
-              <Th align="right">Acoes</Th>
+              <Th>Situação</Th>
+              <Th align="right">Ações</Th>
             </tr>
           </thead>
           <tbody>
@@ -117,7 +118,7 @@ export function TablesManager({ tables }: { tables: Table[] }) {
         open={Boolean(removing)}
         onOpenChange={(open) => !open && setRemoving(null)}
         title={`Excluir a mesa ${removing?.number}?`}
-        description="Se a mesa ja tiver pedidos no historico, ela sera apenas desativada."
+        description="Se a mesa já tiver pedidos no histórico, ela sera apenas desativada."
         confirmLabel="Excluir"
         destructive
         onConfirm={async () => {
@@ -153,13 +154,11 @@ function TableFormDialog({
     null,
   );
 
-  useEffect(() => {
-    if (state?.ok) {
-      toast.success(table ? "Mesa atualizada." : "Mesa criada.");
-      onClose();
-      router.refresh();
-    }
-  }, [state, table, onClose, router]);
+  useActionSuccess(state, () => {
+    toast.success(table ? "Mesa atualizada." : "Mesa criada.");
+    onClose();
+    router.refresh();
+  });
 
   const fieldErrors = state?.ok === false ? state.fieldErrors : undefined;
 
@@ -190,7 +189,7 @@ function TableFormDialog({
         ) : null}
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Numero" htmlFor="number" required error={fieldErrors?.number}>
+          <Field label="Número" htmlFor="number" required error={fieldErrors?.number}>
             <Input
               id="number"
               name="number"
@@ -219,14 +218,14 @@ function TableFormDialog({
           <Input id="name" name="name" defaultValue={table?.name ?? ""} maxLength={60} />
         </Field>
 
-        <Field label="Area" htmlFor="area" hint="Opcional. Ex.: Salao, Deck, Mezanino">
+        <Field label="Area" htmlFor="area" hint="Opcional. Ex.: Salão, Deck, Mezanino">
           <Input id="area" name="area" defaultValue={table?.area ?? ""} maxLength={60} />
         </Field>
 
         <label className="flex items-center gap-2.5">
           <Checkbox name="active" defaultChecked={table?.active ?? true} />
           <span className="text-foreground text-sm">
-            Mesa ativa (aparece no salao para os garcons)
+            Mesa ativa (aparece no salão para os garçons)
           </span>
         </label>
       </form>
@@ -262,7 +261,7 @@ function BulkDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
       open={open}
       onOpenChange={(next) => !next && onClose()}
       title="Criar varias mesas"
-      description="Cria todas as mesas do intervalo. Mesas que ja existem sao ignoradas."
+      description="Cria todas as mesas do intervalo. Mesas que já existem são ignoradas."
       size="sm"
       footer={
         <>
@@ -286,7 +285,7 @@ function BulkDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
             onChange={(event) => setFrom(Number(event.target.value))}
           />
         </Field>
-        <Field label="Ate a mesa" htmlFor="bulk-to">
+        <Field label="Até a mesa" htmlFor="bulk-to">
           <Input
             id="bulk-to"
             type="number"

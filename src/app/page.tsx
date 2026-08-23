@@ -9,35 +9,35 @@ export const dynamic = "force-dynamic";
 const HIGHLIGHTS = [
   {
     icon: ChefHat,
-    title: "Do salao para a cozinha, na hora",
+    title: "Do salão para a cozinha, na hora",
     description:
-      "O garcom lanca o pedido no celular e a comanda aparece na tela da cozinha no mesmo instante, com as observacoes em destaque.",
+      "O garçom lanca o pedido no celular e a comanda aparece na tela da cozinha no mesmo instante, com as observações em destaque.",
   },
   {
     icon: Bell,
     title: "Ninguem mais grita 'saiu!'",
     description:
-      "Quando a cozinha marca pronto, o garcom recebe aviso com som e o pedido sobe para o topo da lista dele.",
+      "Quando a cozinha marca pronto, o garçom recebe aviso com som e o pedido sobe para o topo da lista dele.",
   },
   {
     icon: WifiOff,
     title: "Aguenta Wi-Fi de restaurante",
     description:
-      "Se a conexao cair no meio do lancamento, o pedido fica guardado no aparelho e sai sozinho quando a rede voltar -- sem duplicar.",
+      "Se a conexão cair no meio do lancamento, o pedido fica guardado no aparelho e sai sozinho quando a rede voltar -- sem duplicar.",
   },
   {
     icon: ShieldCheck,
     title: "Cada restaurante com seus dados",
     description:
-      "O isolamento entre restaurantes e garantido no banco de dados, nao na tela. Ninguem enxerga o movimento de ninguem.",
+      "O isolamento entre restaurantes e garantido no banco de dados, não na tela. Ninguem enxerga o movimento de ninguem.",
   },
 ];
 
 export default async function LandingPage() {
   const session = await getSession();
 
-  // Um clique ate o trabalho. O menu continua a um link de distancia, para
-  // quem precisa alternar entre salao, cozinha e painel.
+  // Um clique até o trabalho. O menu continua a um link de distancia, para
+  // quem precisa alternar entre salão, cozinha e painel.
   const areaPrincipal = session?.profile ? PRIMARY_AREA[session.profile.role] : "/inicio";
 
   return (
@@ -51,10 +51,10 @@ export default async function LandingPage() {
         </span>
         <Button asChild variant={session ? "primary" : "ghost"}>
           {/*
-            Ancora comum, e nao o Link do Next, de proposito: a recarga completa
-            nunca serve uma versao antiga da pagina de destino guardada no cache
-            do router. Numa transicao rara como "entrar no app", garantia de
-            estado fresco vale mais do que navegacao instantanea.
+            Ancora comum, e não o Link do Next, de proposito: a recarga completa
+            nunca serve uma versão antiga da página de destino guardada no cache
+            do router. Numa transição rara como "entrar no app", garantia de
+            estado fresco vale mais do que navegação instantanea.
           */}
           <a href={session ? areaPrincipal : "/entrar"}>{session ? "Ir para o app" : "Entrar"}</a>
         </Button>
@@ -65,7 +65,7 @@ export default async function LandingPage() {
           <section className="border-brand/40 bg-brand-soft/40 flex flex-wrap items-center gap-4 rounded-[var(--radius-card)] border-2 p-5">
             <div className="min-w-0 flex-1">
               <p className="text-foreground text-base font-semibold">
-                {session.restaurant?.name ?? "Voce ja esta conectado"}
+                {session.restaurant?.name ?? "Você já está conectado"}
               </p>
               <p className="text-foreground-muted text-sm">{session.email}</p>
             </div>
@@ -77,7 +77,7 @@ export default async function LandingPage() {
                 href="/inicio"
                 className="text-foreground-muted hover:text-foreground text-center text-xs"
               >
-                ou ver todas as areas
+                ou ver todas as áreas
               </a>
             </div>
           </section>
@@ -86,11 +86,11 @@ export default async function LandingPage() {
         <section className="flex flex-col gap-6">
           <h1 className="text-foreground max-w-3xl text-3xl leading-tight font-bold tracking-tight sm:text-5xl">
             Um restaurante tolera um sistema simples.
-            <span className="text-brand block">Nao tolera perder um pedido.</span>
+            <span className="text-brand block">Não tolera perder um pedido.</span>
           </h1>
           <p className="text-foreground-muted max-w-2xl text-base sm:text-lg">
-            O DineFlow cuida do caminho mais critico da operacao: garcom lanca, cozinha recebe,
-            cozinha marca pronto, garcom entrega. Tudo em tempo real, com historico de quem fez o
+            O DineFlow cuida do caminho mais critico da operação: garçom lanca, cozinha recebe,
+            cozinha marca pronto, garçom entrega. Tudo em tempo real, com histórico de quem fez o
             que.
           </p>
           <div className="flex flex-wrap gap-3">
@@ -100,7 +100,7 @@ export default async function LandingPage() {
                   <a href="/entrar">Cadastrar meu restaurante</a>
                 </Button>
                 <Button asChild size="lg" variant="outline">
-                  <a href="/entrar">Ja tenho conta</a>
+                  <a href="/entrar">Já tenho conta</a>
                 </Button>
               </>
             )}

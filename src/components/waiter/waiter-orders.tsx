@@ -37,7 +37,7 @@ export function WaiterOrders({
     try {
       setOrders(await fetchOpenOrders(createClient()));
     } catch {
-      // Mantem a ultima lista conhecida se a rede falhar.
+      // Mantem a última lista conhecida se a rede falhar.
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,7 @@ export function WaiterOrders({
       return true;
     });
 
-    // Pronto primeiro: e o que exige acao imediata do garcom.
+    // Pronto primeiro: e o que exige ação imediata do garçom.
     return filtered.sort((a, b) => {
       if (a.status === "ready" && b.status !== "ready") return -1;
       if (b.status === "ready" && a.status !== "ready") return 1;
@@ -103,7 +103,7 @@ export function WaiterOrders({
         <EmptyState
           icon={<ClipboardList className="size-8" />}
           title="Nenhum pedido aberto"
-          description="Assim que voce enviar um pedido para a cozinha ele aparece aqui."
+          description="Assim que você enviar um pedido para a cozinha ele aparece aqui."
         />
       ) : (
         <ul className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">

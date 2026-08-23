@@ -3,7 +3,7 @@ import type { Enums } from "@/types/database";
 /**
  * Vocabulario que a equipe do restaurante ve na tela.
  *
- * Os termos foram escolhidos para soarem como o salao fala, nao como o banco
+ * Os termos foram escolhidos para soarem como o salão fala, não como o banco
  * modela: "Na cozinha" em vez de "received", "Pronto para retirada" em vez de
  * "ready".
  */
@@ -22,7 +22,7 @@ export const ORDER_STATUS_LABELS: Record<Enums<"order_status">, StatusLabel> = {
     label: "Rascunho",
     short: "Rascunho",
     tone: "neutral",
-    description: "Ainda sendo montado pelo garcom. A cozinha nao ve.",
+    description: "Ainda sendo montado pelo garçom. A cozinha não ve.",
   },
   sent: {
     label: "Enviado para a cozinha",
@@ -46,13 +46,13 @@ export const ORDER_STATUS_LABELS: Record<Enums<"order_status">, StatusLabel> = {
     label: "Pronto para retirada",
     short: "Pronto",
     tone: "success",
-    description: "Aguardando o garcom levar para a mesa.",
+    description: "Aguardando o garçom levar para a mesa.",
   },
   delivered: {
     label: "Entregue na mesa",
     short: "Entregue",
     tone: "accent",
-    description: "O cliente ja recebeu o pedido.",
+    description: "O cliente já recebeu o pedido.",
   },
   completed: {
     label: "Finalizado",
@@ -64,7 +64,7 @@ export const ORDER_STATUS_LABELS: Record<Enums<"order_status">, StatusLabel> = {
     label: "Cancelado",
     short: "Cancelado",
     tone: "danger",
-    description: "Pedido cancelado; nao entra no faturamento.",
+    description: "Pedido cancelado; não entra no faturamento.",
   },
 };
 
@@ -79,7 +79,7 @@ export const TABLE_STATUS_LABELS: Record<Enums<"table_status">, StatusLabel> = {
     label: "Ocupada",
     short: "Ocupada",
     tone: "accent",
-    description: "Cliente na mesa, com pedido em rascunho ou ja entregue.",
+    description: "Cliente na mesa, com pedido em rascunho ou já entregue.",
   },
   waiting: {
     label: "Aguardando cozinha",
@@ -97,12 +97,12 @@ export const TABLE_STATUS_LABELS: Record<Enums<"table_status">, StatusLabel> = {
     label: "Fechada",
     short: "Fechada",
     tone: "neutral",
-    description: "Mesa fora de operacao.",
+    description: "Mesa fora de operação.",
   },
 };
 
 export const ROLE_LABELS: Record<Enums<"user_role">, string> = {
-  waiter: "Garcom",
+  waiter: "Garçom",
   kitchen: "Cozinha",
   manager: "Gerente",
   admin: "Administrador",
@@ -112,9 +112,9 @@ export const ROLE_LABELS: Record<Enums<"user_role">, string> = {
 export const ROLE_DESCRIPTIONS: Record<Enums<"user_role">, string> = {
   waiter: "Abre pedidos, envia para a cozinha e entrega nas mesas.",
   kitchen: "Recebe pedidos, controla o preparo e marca quando fica pronto.",
-  manager: "Gerencia cardapio, mesas, equipe e acompanha a operacao.",
-  admin: "Dono do restaurante. Tudo que o gerente faz, mais as configuracoes.",
-  platform_admin: "Equipe DineFlow. Nao pertence a nenhum restaurante.",
+  manager: "Gerencia cardápio, mesas, equipe e acompanha a operação.",
+  admin: "Dono do restaurante. Tudo que o gerente faz, mais as configurações.",
+  platform_admin: "Equipe DineFlow. Não pertence a nenhum restaurante.",
 };
 
 export const CANCELLATION_REASONS: {
@@ -122,8 +122,8 @@ export const CANCELLATION_REASONS: {
   label: string;
 }[] = [
   { value: "customer_gave_up", label: "Cliente desistiu" },
-  { value: "waiter_error", label: "Erro do garcom" },
-  { value: "product_unavailable", label: "Produto indisponivel" },
+  { value: "waiter_error", label: "Erro do garçom" },
+  { value: "product_unavailable", label: "Produto indisponível" },
   { value: "duplicate", label: "Pedido duplicado" },
   { value: "other", label: "Outro motivo" },
 ];
@@ -133,8 +133,8 @@ export const CANCELLATION_REASON_LABELS = Object.fromEntries(
 ) as Record<Enums<"cancellation_reason">, string>;
 
 /**
- * Observacoes que aparecem como atalho na tela do garcom. Sao as que a equipe
- * digita o dia inteiro; o campo livre continua disponivel para o resto.
+ * Observações que aparecem como atalho na tela do garçom. São as que a equipe
+ * digita o dia inteiro; o campo livre continua disponível para o resto.
  */
 export const QUICK_NOTES = [
   "Sem cebola",
@@ -149,7 +149,7 @@ export const QUICK_NOTES = [
   "Para viagem",
 ] as const;
 
-/** Traduz as acoes do log de auditoria para a linha do tempo do pedido. */
+/** Traduz as ações do log de auditoria para a linha do tempo do pedido. */
 export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "order.created": "abriu o pedido",
   "order.sent": "enviou para a cozinha",
@@ -171,9 +171,9 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   "product.insert": "criou o produto",
   "product.update": "alterou o produto",
   "product.delete": "excluiu o produto",
-  "user.insert": "cadastrou um funcionario",
-  "user.update": "alterou um funcionario",
-  "user.delete": "removeu um funcionario",
+  "user.insert": "cadastrou um funcionário",
+  "user.update": "alterou um funcionário",
+  "user.delete": "removeu um funcionário",
 };
 
 export function auditActionLabel(action: string): string {

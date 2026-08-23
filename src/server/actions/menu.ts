@@ -8,7 +8,7 @@ import { canAny } from "@/domain/permissions";
 import { fail, ok, type ActionResult } from "@/lib/errors";
 
 /**
- * Checkbox HTML nao envia nada quando desmarcado -- ler o campo como "true a
+ * Checkbox HTML não envia nada quando desmarcado -- ler o campo como "true a
  * menos que venha 'false'" faria toda desmarcacao ser ignorada em silencio.
  */
 function isChecked(formData: FormData, field: string): boolean {
@@ -71,7 +71,7 @@ export async function deleteCategory(id: string): Promise<ActionResult<null>> {
     const supabase = await createClient();
 
     // O banco bloqueia a exclusao por foreign key; checar antes permite dar
-    // uma mensagem util em vez de um erro de constraint.
+    // uma mensagem útil em vez de um erro de constraint.
     const { count } = await supabase
       .from("products")
       .select("id", { count: "exact", head: true })
@@ -122,7 +122,7 @@ export async function saveProduct(_prev: unknown, formData: FormData): Promise<A
       name: formData.get("name"),
       description: formData.get("description") || undefined,
       categoryId: (formData.get("categoryId") as string) || null,
-      // O formulario usa virgula decimal, como todo teclado brasileiro.
+      // O formulário usa virgula decimal, como todo teclado brasileiro.
       price: String(formData.get("price") ?? "").replace(",", "."),
       prepMinutes: formData.get("prepMinutes") || null,
       imageUrl: (formData.get("imageUrl") as string) || null,
@@ -172,8 +172,8 @@ export async function deleteProduct(id: string): Promise<ActionResult<null>> {
     await assertRestaurantPermission("menu.manage");
     const supabase = await createClient();
 
-    // Produto ja vendido nao pode ser apagado: as comandas antigas apontam
-    // para ele. Desativar tira do cardapio e preserva o historico.
+    // Produto já vendido não pode ser apagado: as comandas antigas apontam
+    // para ele. Desativar tira do cardápio e preserva o histórico.
     const { count } = await supabase
       .from("order_items")
       .select("id", { count: "exact", head: true })
@@ -186,7 +186,7 @@ export async function deleteProduct(id: string): Promise<ActionResult<null>> {
       revalidateMenu();
       return {
         ok: false,
-        error: "Este produto ja foi vendido, entao foi retirado do cardapio em vez de excluido.",
+        error: "Este produto já foi vendido, então foi retirado do cardápio em vez de excluido.",
       };
     }
 
@@ -203,9 +203,9 @@ export async function deleteProduct(id: string): Promise<ActionResult<null>> {
 /**
  * Liga/desliga a disponibilidade do dia.
  *
- * Permitido tambem para a cozinha -- e ela que descobre primeiro que acabou o
+ * Permitido também para a cozinha -- e ela que descobre primeiro que acabou o
  * ingrediente. O trigger products_guard_kitchen_update garante que a cozinha
- * so consiga mudar esta coluna.
+ * só consiga mudar esta coluna.
  */
 export async function setProductAvailability(
   id: string,
@@ -215,7 +215,7 @@ export async function setProductAvailability(
     const session = await assertRestaurantPermission("orders.view_all");
 
     if (!canAny(session.profile.role, ["menu.manage", "kitchen.view"])) {
-      return { ok: false, error: "Voce nao tem permissao para alterar a disponibilidade." };
+      return { ok: false, error: "Você não tem permissão para alterar a disponibilidade." };
     }
 
     const supabase = await createClient();

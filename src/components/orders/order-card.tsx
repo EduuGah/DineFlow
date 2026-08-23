@@ -11,9 +11,9 @@ import type { OrderWithItems } from "@/lib/queries";
 import { cn } from "@/lib/utils/cn";
 
 /**
- * Cartao de pedido usado pelo garcom e pelo gerente.
+ * Cartao de pedido usado pelo garçom e pelo gerente.
  *
- * A cozinha tem o proprio cartao (kitchen/order-ticket.tsx): la a informacao
+ * A cozinha tem o próprio cartao (kitchen/order-ticket.tsx): la a informação
  * relevante e outra e o tamanho precisa ser bem maior.
  */
 export function OrderCard({
@@ -39,7 +39,7 @@ export function OrderCard({
       <OrderStatusBadge status={order.status} size="sm" />
       {order.status === "ready" ? (
         <Badge tone="success" size="sm" solid>
-          ha {waitingMinutes} min
+          há {waitingMinutes} min
         </Badge>
       ) : null}
     </div>

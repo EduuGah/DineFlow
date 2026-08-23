@@ -20,7 +20,7 @@ export default async function StaffPage() {
     <PageContainer>
       <PageHeader
         title="Equipe"
-        description="Cada pessoa entra com a propria conta Google -- e assim que o historico sabe quem fez o que."
+        description="Cada pessoa entra com a própria conta Google -- e assim que o histórico sabe quem fez o que."
       />
       <StaffManager
         staff={staff}

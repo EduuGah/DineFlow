@@ -19,7 +19,7 @@ const ENTITY_LABELS: Record<string, string> = {
   product: "Produto",
   category: "Categoria",
   table: "Mesa",
-  user: "Funcionario",
+  user: "Funcionário",
 };
 
 export default async function AuditPage() {
@@ -31,14 +31,14 @@ export default async function AuditPage() {
     <PageContainer wide>
       <PageHeader
         title="Auditoria"
-        description="Quem fez o que, e quando. Os registros sao gravados pelo banco e nao podem ser editados."
+        description="Quem fez o que, e quando. Os registros são gravados pelo banco e não podem ser editados."
       />
 
       {logs.length === 0 ? (
         <EmptyState
           icon={<ScrollText className="size-8" />}
           title="Nenhum registro ainda"
-          description="Assim que a operacao comecar, cada acao relevante aparece aqui."
+          description="Assim que a operação começar, cada ação relevante aparece aqui."
         />
       ) : (
         <DataTable>
@@ -47,7 +47,7 @@ export default async function AuditPage() {
               <Th>Quando</Th>
               <Th>Quem</Th>
               <Th>Papel</Th>
-              <Th>Acao</Th>
+              <Th>Ação</Th>
               <Th>Sobre</Th>
             </tr>
           </thead>

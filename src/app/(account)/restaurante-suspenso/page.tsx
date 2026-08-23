@@ -11,7 +11,7 @@ export default async function SuspendedPage() {
       <EmptyState
         icon={<CreditCard className="size-8" />}
         title="Assinatura suspensa"
-        description={`O acesso operacional de ${session?.restaurant?.name ?? "este restaurante"} esta bloqueado. Fale com o administrador da conta para regularizar a assinatura e liberar a equipe.`}
+        description={`O acesso operacional de ${session?.restaurant?.name ?? "este restaurante"} está bloqueado. Fale com o administrador da conta para regularizar a assinatura e liberar a equipe.`}
       />
     </PageContainer>
   );

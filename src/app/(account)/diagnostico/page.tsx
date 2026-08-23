@@ -16,17 +16,17 @@ export const metadata: Metadata = { title: "Diagnóstico" };
 export const dynamic = "force-dynamic";
 
 /**
- * O que o servidor enxerga desta sessao.
+ * O que o servidor enxerga desta sessão.
  *
- * Existe porque "não funciona" nao e diagnosticavel: as guardas do app
- * redirecionam em silencio, e de fora nao da para saber se o bloqueio veio de
- * sessao ausente, perfil nao provisionado, restaurante suspenso ou papel sem
- * permissao. Esta tela responde isso em uma olhada.
+ * Existe porque "não funciona" não e diagnosticavel: as guardas do app
+ * redirecionam em silencio, e de fora não da para saber se o bloqueio veio de
+ * sessão ausente, perfil não provisionado, restaurante suspenso ou papel sem
+ * permissão. Esta tela responde isso em uma olhada.
  *
- * Nao tem guarda propria alem de exigir sessao -- e justamente a tela que
+ * Não tem guarda própria além de exigir sessão -- e justamente a tela que
  * precisa renderizar quando todas as outras estao redirecionando.
  *
- * Mostra apenas dados da propria conta, que o RLS ja liberaria de qualquer
+ * Mostra apenas dados da própria conta, que o RLS já liberaria de qualquer
  * forma. Nenhuma chave, nenhum token.
  */
 export default async function DiagnosticPage() {
@@ -37,7 +37,7 @@ export default async function DiagnosticPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Consulta crua, para distinguir "nao existe" de "o RLS escondeu".
+  // Consulta crua, para distinguir "não existe" de "o RLS escondeu".
   const { data: profileRow, error: profileError } = user
     ? await supabase.from("users").select("*").eq("id", user.id).maybeSingle()
     : { data: null, error: null };
@@ -53,22 +53,22 @@ export default async function DiagnosticPage() {
   const ambiente = process.env.VERCEL_ENV ?? "local";
   const role = (profileRow?.role ?? null) as UserRole | null;
 
-  const areas: { label: string; href: string; permission: Permission }[] = [
+  const áreas: { label: string; href: string; permission: Permission }[] = [
     { label: "Painel do gerente", href: "/gerente", permission: "reports.view" },
     { label: "Salão", href: "/garcom", permission: "orders.create" },
     { label: "Cozinha", href: "/cozinha", permission: "kitchen.view" },
   ];
 
-  /** Reproduz, sem redirecionar, a decisao de requireActiveRestaurant(). */
+  /** Reproduz, sem redirecionar, a decisão de requireActiveRestaurant(). */
   function veredito(permission: Permission): { ok: boolean; motivo: string } {
-    if (!user) return { ok: false, motivo: "sem sessao -> /entrar" };
+    if (!user) return { ok: false, motivo: "sem sessão -> /entrar" };
     if (!profileRow) return { ok: false, motivo: "sem perfil -> /inicio" };
     if (profileRow.status !== "active")
       return { ok: false, motivo: "conta inativa -> /conta-inativa" };
     if (!role || !can(role, permission)) {
-      return { ok: false, motivo: `papel ${role ?? "?"} nao tem ${permission} -> /sem-permissao` };
+      return { ok: false, motivo: `papel ${role ?? "?"} não tem ${permission} -> /sem-permissão` };
     }
-    if (!restaurantRow) return { ok: false, motivo: "restaurante nao encontrado -> /inicio" };
+    if (!restaurantRow) return { ok: false, motivo: "restaurante não encontrado -> /inicio" };
     if (restaurantRow.status !== "active" && restaurantRow.status !== "trial") {
       return { ok: false, motivo: `assinatura ${restaurantRow.status} -> /restaurante-suspenso` };
     }
@@ -145,10 +145,10 @@ export default async function DiagnosticPage() {
           description="Mesma decisão que a página tomaria, sem redirecionar."
         />
         <CardBody className="flex flex-col gap-3">
-          {areas.map((area) => {
-            const resultado = veredito(area.permission);
+          {áreas.map((área) => {
+            const resultado = veredito(área.permission);
             return (
-              <div key={area.href} className="flex items-start gap-3 text-sm">
+              <div key={área.href} className="flex items-start gap-3 text-sm">
                 <span
                   className={cn(
                     "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full",
@@ -158,7 +158,7 @@ export default async function DiagnosticPage() {
                   {resultado.ok ? <Check className="size-3" /> : <X className="size-3" />}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="text-foreground block font-medium">{area.label}</span>
+                  <span className="text-foreground block font-medium">{área.label}</span>
                   <span className="text-foreground-muted block">{resultado.motivo}</span>
                 </span>
               </div>

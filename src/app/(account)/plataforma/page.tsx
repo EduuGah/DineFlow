@@ -19,11 +19,11 @@ const STATUS_TONE = {
 } as const;
 
 /**
- * Painel da plataforma (secao 35 do roadmap) -- versao inicial.
+ * Painel da plataforma (secao 35 do roadmap) -- versão inicial.
  *
  * Entrega apenas a listagem de restaurantes, que e o que o admin da plataforma
  * consegue ler por RLS hoje. Assinaturas, receita e churn dependem do modulo de
- * cobranca (Sprint 12) e ainda nao existem no banco.
+ * cobranca (Sprint 12) e ainda não existem no banco.
  */
 export default async function PlatformPage() {
   await requirePermission("platform.manage");
@@ -61,7 +61,7 @@ export default async function PlatformPage() {
           <thead>
             <tr>
               <Th>Restaurante</Th>
-              <Th>Endereco</Th>
+              <Th>Endereço</Th>
               <Th>Plano</Th>
               <Th>Status</Th>
               <Th align="center">Equipe ativa</Th>

@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 /**
  * Tela inicial depois de entrar.
  *
- * Nao redireciona para lugar nenhum -- e o unico destino do app garantido a
+ * Não redireciona para lugar nenhum -- e o único destino do app garantido a
  * renderizar. Quem chega aqui ou escolhe para onde ir, ou descobre o que falta
  * para poder ir a algum lugar.
  */
@@ -22,17 +22,17 @@ export default async function HomePage() {
   const session = await requireSession();
 
   /*
-   * Leitura falhou: nao pedimos cadastro.
+   * Leitura falhou: não pedimos cadastro.
    *
    * Sem esta checagem, uma falha de leitura viraria "cadastre seu restaurante"
-   * para quem ja tem um -- pedindo algo impossivel e escondendo o problema
+   * para quem já tem um -- pedindo algo impossível e escondendo o problema
    * real. Melhor mostrar o erro e o caminho para o diagnostico.
    */
   if (session.error) {
     return (
       <PageContainer className="max-w-xl">
         <Banner tone="danger">
-          Nao foi possivel carregar seus dados. Isso nao significa que falte cadastro -- a leitura
+          Não foi possível carregar seus dados. Isso não significa que falte cadastro -- a leitura
           em si falhou.
         </Banner>
         <p className="text-foreground-muted font-mono text-xs break-all">{session.error}</p>
@@ -52,8 +52,8 @@ export default async function HomePage() {
     );
   }
 
-  // Admin da plataforma nao pertence a restaurante nenhum -- para ele o hub
-  // mostra o painel da plataforma, nao a operacao de uma casa.
+  // Admin da plataforma não pertence a restaurante nenhum -- para ele o hub
+  // mostra o painel da plataforma, não a operação de uma casa.
   if (session.profile.role === "platform_admin") {
     return (
       <PageContainer className="max-w-3xl">

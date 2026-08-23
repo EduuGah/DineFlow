@@ -4,21 +4,21 @@ import { createClient } from "@/lib/supabase/client";
 import type { Enums } from "@/types/database";
 
 /**
- * Fila local de operacoes (secao 22 do roadmap).
+ * Fila local de operações (secao 22 do roadmap).
  *
- * Restaurante com Wi-Fi ruim e a regra, nao a excecao. Toda escrita do garcom
+ * Restaurante com Wi-Fi ruim e a regra, não a exceção. Toda escrita do garçom
  * entra aqui antes de ir para o servidor: se a rede cair no meio do envio, a
- * operacao fica gravada no aparelho e sai sozinha quando a conexao voltar.
+ * operação fica gravada no aparelho e sai sozinha quando a conexão voltar.
  *
  * IDEMPOTENCIA
- * Cada operacao carrega um id gerado no cliente e usado como chave primaria da
- * linha. Reenviar a mesma operacao colide com a chave existente -- o banco
- * recusa e nos tratamos como "ja aplicada". E por isso que dois cliques no
- * botao Enviar, ou um retry automatico, nunca viram dois pedidos.
+ * Cada operação carrega um id gerado no cliente e usado como chave primaria da
+ * linha. Reenviar a mesma operação colide com a chave existente -- o banco
+ * recusa e nos tratamos como "já aplicada". E por isso que dois cliques no
+ * botao Enviar, ou um retry automático, nunca viram dois pedidos.
  *
  * Vale notar o limite disso: o id gerado no cliente identifica uma linha que o
- * usuario tem permissao de criar. Nenhuma decisao de acesso depende dele -- o
- * RLS continua derivando o tenant da sessao, nunca do payload.
+ * usuário tem permissão de criar. Nenhuma decisão de acesso depende dele -- o
+ * RLS continua derivando o tenant da sessão, nunca do payload.
  */
 
 const STORAGE_KEY = "dineflow:outbox:v1";
@@ -69,7 +69,7 @@ function read(): Entry[] {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as Entry[]) : [];
   } catch {
-    // localStorage corrompido nao pode derrubar o app do garcom.
+    // localStorage corrompido não pode derrubar o app do garçom.
     return [];
   }
 }
@@ -79,7 +79,7 @@ function write(entries: Entry[]) {
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   } catch {
-    // Cota estourada: seguimos sem persistir e a operacao vai na tentativa atual.
+    // Cota estourada: seguimos sem persistir e a operação vai na tentativa atual.
   }
   notify(entries.length);
 }
@@ -100,7 +100,7 @@ export function pendingCount(): number {
   return read().length;
 }
 
-/** Erro de rede (vale reenviar) x erro do banco (nao adianta insistir). */
+/** Erro de rede (vale reenviar) x erro do banco (não adianta insistir). */
 function isTransient(error: unknown): boolean {
   const message = (error as { message?: string })?.message ?? "";
   const code = (error as { code?: string })?.code ?? "";
@@ -114,7 +114,7 @@ function isTransient(error: unknown): boolean {
   );
 }
 
-/** Chave duplicada = a operacao ja tinha sido aplicada numa tentativa anterior. */
+/** Chave duplicada = a operação já tinha sido aplicada numa tentativa anterior. */
 function isAlreadyApplied(error: unknown): boolean {
   return (error as { code?: string })?.code === "23505";
 }
@@ -141,7 +141,7 @@ async function execute(operation: OutboxOperation): Promise<void> {
       restaurant_id: operation.restaurantId,
       order_id: operation.orderId,
       product_id: operation.productId,
-      // Nome e preco sao sobrescritos pelo trigger com os valores do cardapio.
+      // Nome e preço são sobrescritos pelo trigger com os valores do cardápio.
       // Vao no payload apenas para satisfazer o NOT NULL da coluna.
       product_name: operation.productName,
       quantity: operation.quantity,
@@ -187,7 +187,7 @@ export type FlushResult = {
 
 /**
  * Envia a fila em ordem. Para na primeira falha de rede -- reenviar as
- * seguintes fora de ordem criaria item em pedido que ainda nao existe.
+ * seguintes fora de ordem criaria item em pedido que ainda não existe.
  */
 export async function flushOutbox(): Promise<FlushResult> {
   if (flushing) return { applied: 0, failed: [], pending: read().length };
@@ -216,8 +216,8 @@ export async function flushOutbox(): Promise<FlushResult> {
           break;
         }
 
-        // Erro definitivo (produto indisponivel, pedido ja fechado, sem
-        // permissao): descartamos a operacao e devolvemos o motivo, para a
+        // Erro definitivo (produto indisponível, pedido já fechado, sem
+        // permissão): descartamos a operação e devolvemos o motivo, para a
         // tela poder explicar em vez de tentar para sempre.
         failed.push({ operation: entry.operation, error });
         entries = rest;
@@ -240,12 +240,12 @@ export function enqueue(operation: OutboxOperation): void {
 
 /**
  * Caminho normal de escrita: tenta direto e, se a rede falhar, guarda para
- * depois. Erros do banco sobem na hora -- "produto indisponivel" precisa
- * aparecer enquanto o garcom ainda esta na mesa.
+ * depois. Erros do banco sobem na hora -- "produto indisponível" precisa
+ * aparecer enquanto o garçom ainda está na mesa.
  */
 export async function submit(operation: OutboxOperation): Promise<{ queued: boolean }> {
   if (read().length > 0) {
-    // Ja existe fila: entrar nela mantem a ordem das operacoes.
+    // Já existe fila: entrar nela mantem a ordem das operações.
     enqueue(operation);
     void flushOutbox();
     return { queued: true };

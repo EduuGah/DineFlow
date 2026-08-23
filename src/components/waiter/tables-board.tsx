@@ -25,10 +25,10 @@ const FILTERS = [
 type Filter = (typeof FILTERS)[number]["value"];
 
 /**
- * Painel de mesas do garcom.
+ * Painel de mesas do garçom.
  *
  * E a tela mais usada do sistema: precisa responder "onde tem coisa
- * esperando por mim?" antes de o garcom terminar de olhar. Por isso as mesas
+ * esperando por mim?" antes de o garçom terminar de olhar. Por isso as mesas
  * com pedido pronto sobem para o topo e ganham destaque de cor e borda.
  */
 export function TablesBoard({
@@ -46,15 +46,15 @@ export function TablesBoard({
     try {
       setTables(await fetchTablesWithOrders(createClient()));
     } catch {
-      // Falha de rede aqui nao limpa a tela: o garcom continua vendo o
-      // ultimo estado conhecido ate a proxima sincronizacao.
+      // Falha de rede aqui não limpa a tela: o garçom continua vendo o
+      // último estado conhecido até a proxima sincronização.
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Um evento de pedido muda o status da mesa por trigger, entao qualquer
-  // mudanca nas duas tabelas exige recarregar o painel.
+  // Um evento de pedido muda o status da mesa por trigger, então qualquer
+  // mudança nas duas tabelas exige recarregar o painel.
   useRealtime({
     restaurantId,
     tables: ["tables", "orders"],
@@ -63,7 +63,7 @@ export function TablesBoard({
   });
 
   useEffect(() => {
-    // Sincroniza tambem ao voltar para a aba: em celular o socket costuma
+    // Sincroniza também ao voltar para a aba: em celular o socket costuma
     // cair enquanto a tela esta apagada.
     const onVisible = () => {
       if (document.visibilityState === "visible") void reload();
@@ -102,7 +102,7 @@ export function TablesBoard({
       <EmptyState
         icon={<UtensilsCrossed className="size-8" />}
         title="Nenhuma mesa cadastrada"
-        description="Cadastre as mesas do salao para comecar a lancar pedidos."
+        description="Cadastre as mesas do salão para começar a lancar pedidos."
         action={
           <Button asChild size="lg">
             <Link href="/gerente/mesas">Cadastrar mesas</Link>
@@ -138,7 +138,7 @@ export function TablesBoard({
         <EmptyState
           icon={<LayoutGrid className="size-8" />}
           title="Nenhuma mesa neste filtro"
-          description="Troque o filtro para ver as demais mesas do salao."
+          description="Troque o filtro para ver as demais mesas do salão."
         />
       ) : (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
@@ -205,7 +205,7 @@ function TableCard({ table }: { table: TableWithOrders }) {
           </p>
           <p className="tabular text-foreground-muted">
             {formatCurrency(total)}
-            {oldest ? ` - ha ${minutesSince(oldest)} min` : null}
+            {oldest ? ` - há ${minutesSince(oldest)} min` : null}
           </p>
         </div>
       )}

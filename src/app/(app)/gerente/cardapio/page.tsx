@@ -5,7 +5,7 @@ import { fetchCategories, fetchProducts } from "@/lib/queries";
 import { PageContainer, PageHeader } from "@/components/shared/page-header";
 import { MenuManager } from "@/components/manager/menu-manager";
 
-export const metadata: Metadata = { title: "Cardapio" };
+export const metadata: Metadata = { title: "Cardápio" };
 export const dynamic = "force-dynamic";
 
 export default async function MenuPage() {
@@ -20,8 +20,8 @@ export default async function MenuPage() {
   return (
     <PageContainer>
       <PageHeader
-        title="Cardapio"
-        description="Produtos indisponiveis somem da tela do garcom sem sair do cadastro."
+        title="Cardápio"
+        description="Produtos indisponíveis somem da tela do garçom sem sair do cadastro."
       />
       <MenuManager categories={categories} products={products} />
     </PageContainer>

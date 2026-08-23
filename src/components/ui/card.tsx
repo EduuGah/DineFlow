@@ -56,7 +56,7 @@ export function CardFooter({ className, ...props }: HTMLAttributes<HTMLDivElemen
   );
 }
 
-/** Numero grande com rotulo -- os cartoes do dashboard do gerente. */
+/** Número grande com rotulo -- os cartoes do dashboard do gerente. */
 export function StatCard({
   label,
   value,

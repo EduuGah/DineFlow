@@ -6,8 +6,8 @@ import { TooltipProvider } from "@/components/ui/dropdown";
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await requireProfile();
 
-  // Admin da plataforma nao pertence a restaurante nenhum e nao tem o que
-  // fazer nas telas de operacao.
+  // Admin da plataforma não pertence a restaurante nenhum e não tem o que
+  // fazer nas telas de operação.
   if (session.profile.role === "platform_admin") {
     redirect("/plataforma");
   }

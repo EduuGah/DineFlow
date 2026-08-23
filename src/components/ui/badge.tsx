@@ -88,7 +88,7 @@ export function TableStatusBadge({
   );
 }
 
-/** Contador de nao-lidas. Some sozinho no zero para nao virar ruido visual. */
+/** Contador de não-lidas. Some sozinho no zero para não virar ruido visual. */
 export function CountBadge({ count, tone = "danger" }: { count: number; tone?: Tone }) {
   if (count <= 0) return null;
 
@@ -99,7 +99,7 @@ export function CountBadge({ count, tone = "danger" }: { count: number; tone?: T
         "text-xs font-bold",
         SOLID[tone],
       )}
-      aria-label={`${count} nao lidas`}
+      aria-label={`${count} não lidas`}
     >
       {count > 99 ? "99+" : count}
     </span>

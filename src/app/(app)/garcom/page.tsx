@@ -5,9 +5,9 @@ import { fetchTablesWithOrders } from "@/lib/queries";
 import { PageContainer, PageHeader } from "@/components/shared/page-header";
 import { TablesBoard } from "@/components/waiter/tables-board";
 
-export const metadata: Metadata = { title: "Salao" };
+export const metadata: Metadata = { title: "Salão" };
 
-// O salao muda a cada pedido; nao ha nada a cachear entre requisicoes.
+// O salão muda a cada pedido; não há nada a cachear entre requisicoes.
 export const dynamic = "force-dynamic";
 
 export default async function WaiterHomePage() {
@@ -18,7 +18,7 @@ export default async function WaiterHomePage() {
   return (
     <PageContainer wide>
       <PageHeader
-        title="Salao"
+        title="Salão"
         description="Toque em uma mesa para abrir ou continuar um pedido."
       />
       <TablesBoard restaurantId={session.restaurant.id} initialTables={tables} />

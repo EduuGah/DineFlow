@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils/cn";
 import { toast } from "sonner";
 
 /**
- * Estado de sincronizacao no cabecalho.
+ * Estado de sincronização no cabecalho.
  *
  * Some quando esta tudo certo. Um indicador verde permanente vira ruido; o que
  * a equipe precisa saber e exatamente quando NAO esta sincronizado.
@@ -35,13 +35,13 @@ export function SyncIndicator() {
       if (result.applied > 0) {
         toast.success(
           result.applied === 1
-            ? "1 operacao pendente foi enviada."
-            : `${result.applied} operacoes pendentes foram enviadas.`,
+            ? "1 operação pendente foi enviada."
+            : `${result.applied} operações pendentes foram enviadas.`,
         );
       }
 
       for (const failure of result.failed) {
-        toast.error("Uma operacao pendente nao pode ser aplicada", {
+        toast.error("Uma operação pendente não pode ser aplicada", {
           description: friendlyError(failure.error),
           duration: 10000,
         });
@@ -71,8 +71,8 @@ export function SyncIndicator() {
       <span className="hidden sm:inline">
         {offline
           ? pending > 0
-            ? `Sem conexao - ${pending} para enviar`
-            : "Sem conexao"
+            ? `Sem conexão - ${pending} para enviar`
+            : "Sem conexão"
           : `Enviando ${pending}...`}
       </span>
       <span className="sm:hidden">{pending > 0 ? pending : <WifiOff className="size-3.5" />}</span>

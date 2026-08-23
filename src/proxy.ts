@@ -8,8 +8,8 @@ export default async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Tudo, menos assets estaticos e imagens -- o refresh de sessao nao
-     * precisa rodar para cada icone, e num salao com internet ruim cada
+     * Tudo, menos assets estaticos e imagens -- o refresh de sessão não
+     * precisa rodar para cada icone, e num salão com internet ruim cada
      * round-trip evitado conta.
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?)$).*)",

@@ -9,12 +9,12 @@ import { fail, ok, type ActionResult } from "@/lib/errors";
 /**
  * Convite de acesso.
  *
- * Com login via Google o gerente nao cria credencial nenhuma -- ele autoriza
+ * Com login via Google o gerente não cria credencial nenhuma -- ele autoriza
  * um e-mail. Quando a pessoa entra com a conta Google correspondente, o
- * trigger `app.handle_new_auth_user` encontra o convite e faz o vinculo.
+ * trigger `app.handle_new_auth_user` encontra o convite e faz o vínculo.
  *
- * O `restaurant_id` vem da SESSAO, nunca do formulario: sem isso a action
- * viraria um meio de inserir funcionario em qualquer restaurante da
+ * O `restaurant_id` vem da SESSAO, nunca do formulário: sem isso a action
+ * viraria um meio de inserir funcionário em qualquer restaurante da
  * plataforma.
  */
 export async function inviteStaff(_prev: unknown, formData: FormData): Promise<ActionResult<null>> {
@@ -51,7 +51,7 @@ export async function inviteStaff(_prev: unknown, formData: FormData): Promise<A
       .maybeSingle();
 
     if (existing) {
-      return { ok: false, error: "Esse e-mail ja faz parte da equipe." };
+      return { ok: false, error: "Esse e-mail já faz parte da equipe." };
     }
 
     const { error } = await supabase.from("staff_invitations").insert({
@@ -65,7 +65,7 @@ export async function inviteStaff(_prev: unknown, formData: FormData): Promise<A
       if (error.code === "23505") {
         return {
           ok: false,
-          error: "Ja existe um convite pendente para esse e-mail.",
+          error: "Já existe um convite pendente para esse e-mail.",
         };
       }
       return fail(error);
@@ -113,7 +113,7 @@ export async function updateStaff(_prev: unknown, formData: FormData): Promise<A
     if (!parsed.success) {
       return {
         ok: false,
-        error: "Confira os dados do funcionario.",
+        error: "Confira os dados do funcionário.",
         fieldErrors: parsed.error.flatten().fieldErrors,
       };
     }
@@ -125,7 +125,7 @@ export async function updateStaff(_prev: unknown, formData: FormData): Promise<A
     // Um gerente rebaixando a si mesmo ficaria sem ninguem para gerenciar a
     // equipe; a saida e outro admin fazer isso.
     if (id === session.userId && parsed.data.role !== session.profile.role) {
-      return { ok: false, error: "Voce nao pode alterar o proprio papel." };
+      return { ok: false, error: "Você não pode alterar o próprio papel." };
     }
 
     const supabase = await createClient();
@@ -151,15 +151,15 @@ export async function updateStaff(_prev: unknown, formData: FormData): Promise<A
 /**
  * Desativa em vez de excluir.
  *
- * O funcionario aparece em pedidos e logs de meses atras; apaga-lo deixaria
- * buracos no historico que o restaurante precisa manter.
+ * O funcionário aparece em pedidos e logs de meses atrás; apaga-lo deixaria
+ * buracos no histórico que o restaurante precisa manter.
  */
 export async function deactivateStaff(id: string): Promise<ActionResult<null>> {
   try {
     const session = await assertRestaurantPermission("staff.manage");
 
     if (id === session.userId) {
-      return { ok: false, error: "Voce nao pode desativar o proprio acesso." };
+      return { ok: false, error: "Você não pode desativar o próprio acesso." };
     }
 
     const supabase = await createClient();

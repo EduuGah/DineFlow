@@ -11,10 +11,10 @@ export type Notification = Tables<"notifications">;
 const PAGE_SIZE = 30;
 
 /**
- * Central de notificacoes do usuario (secao 14 do roadmap).
+ * Central de notificações do usuário (secao 14 do roadmap).
  *
- * Toast + som + badge + historico saem daqui. O RLS de `notifications`
- * restringe as linhas ao proprio usuario, entao a assinatura nao precisa (nem
+ * Toast + som + badge + histórico saem daqui. O RLS de `notifications`
+ * restringe as linhas ao próprio usuário, então a assinatura não precisa (nem
  * pode) enxergar as dos colegas.
  */
 export function useNotifications(userId: string | null) {
@@ -63,7 +63,7 @@ export function useNotifications(userId: string | null) {
           const notification = record as Notification;
 
           setItems((current) =>
-            // O INSERT pode chegar duas vezes apos uma reconexao.
+            // O INSERT pode chegar duas vezes após uma reconexão.
             current.some((item) => item.id === notification.id)
               ? current
               : [notification, ...current].slice(0, PAGE_SIZE),
@@ -77,8 +77,8 @@ export function useNotifications(userId: string | null) {
           const show = isReady ? toast.success : isCancelled ? toast.error : toast;
           show(notification.title, {
             description: notification.message,
-            // Pedido pronto fica na tela ate o garcom ver: e a notificacao
-            // que nao pode passar despercebida.
+            // Pedido pronto fica na tela até o garçom ver: e a notificação
+            // que não pode passar despercebida.
             duration: isReady ? Number.POSITIVE_INFINITY : 6000,
           });
         },

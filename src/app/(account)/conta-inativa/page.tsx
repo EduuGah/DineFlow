@@ -8,7 +8,7 @@ export default function InactiveAccountPage() {
       <EmptyState
         icon={<UserX className="size-8" />}
         title="Seu acesso foi desativado"
-        description="Fale com o gerente do restaurante para reativar sua conta. Seu historico de pedidos continua preservado."
+        description="Fale com o gerente do restaurante para reativar sua conta. Seu histórico de pedidos continua preservado."
       />
     </PageContainer>
   );

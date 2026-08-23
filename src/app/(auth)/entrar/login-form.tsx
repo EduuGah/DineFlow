@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 /** Mensagens dos erros que o fluxo de OAuth devolve na URL. */
 const LOGIN_ERRORS: Record<string, string> = {
   "acesso-negado": "O acesso pela conta Google foi negado. Tente de novo.",
-  "link-invalido": "O link de retorno era invalido. Comece o login novamente.",
+  "link-invalido": "O link de retorno era inválido. Comece o login novamente.",
   "sem-verificador":
-    "A sessao do login se perdeu no caminho. Comece de novo por esta tela, no mesmo navegador.",
-  "sessao-invalida": "Nao foi possivel concluir o login. Tente de novo.",
+    "A sessão do login se perdeu no caminho. Comece de novo por esta tela, no mesmo navegador.",
+  "sessao-invalida": "Não foi possível concluir o login. Tente de novo.",
   "provedor-indisponivel":
-    "O login com Google esta indisponivel no momento. Fale com o administrador.",
+    "O login com Google está indisponível no momento. Fale com o administrador.",
 };
 
 function GoogleMark() {
@@ -45,7 +45,7 @@ export function LoginForm({ next, loginError }: { next?: string; loginError?: st
 
   return (
     /*
-     * Formulario GET para um Route Handler, e nao Server Action.
+     * Formulario GET para um Route Handler, e não Server Action.
      *
      * O handler precisa gravar o cookie do verificador PKCE na mesma resposta
      * que redireciona para o Google. Como bonus, funciona sem JavaScript.

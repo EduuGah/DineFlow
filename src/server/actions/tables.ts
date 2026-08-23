@@ -59,7 +59,7 @@ export async function deleteTable(id: string): Promise<ActionResult<null>> {
     await assertRestaurantPermission("tables.manage");
     const supabase = await createClient();
 
-    // Mesa com historico de pedidos nao pode sumir -- levaria o historico
+    // Mesa com histórico de pedidos não pode sumir -- levaria o histórico
     // junto. Nesse caso o caminho e desativar.
     const { count } = await supabase
       .from("orders")
@@ -74,7 +74,7 @@ export async function deleteTable(id: string): Promise<ActionResult<null>> {
       revalidatePath("/garcom");
       return {
         ok: false,
-        error: "Esta mesa ja tem pedidos no historico, entao foi apenas desativada.",
+        error: "Esta mesa já tem pedidos no histórico, então foi apenas desativada.",
       };
     }
 
@@ -90,7 +90,7 @@ export async function deleteTable(id: string): Promise<ActionResult<null>> {
 }
 
 /**
- * Criacao em lote no onboarding: "tenho 20 mesas" nao deveria custar 20
+ * Criacao em lote no onboarding: "tenho 20 mesas" não deveria custar 20
  * formularios.
  */
 export async function createTablesInBulk(
@@ -102,11 +102,11 @@ export async function createTablesInBulk(
     const session = await assertRestaurantPermission("tables.manage");
 
     if (!Number.isInteger(from) || !Number.isInteger(to) || from < 1 || to < from) {
-      return { ok: false, error: "Informe um intervalo valido de numeros de mesa." };
+      return { ok: false, error: "Informe um intervalo valido de números de mesa." };
     }
 
     if (to - from >= 200) {
-      return { ok: false, error: "Crie no maximo 200 mesas por vez." };
+      return { ok: false, error: "Crie no máximo 200 mesas por vez." };
     }
 
     const supabase = await createClient();
@@ -128,7 +128,7 @@ export async function createTablesInBulk(
       }));
 
     if (rows.length === 0) {
-      return { ok: false, error: "Todas as mesas desse intervalo ja existem." };
+      return { ok: false, error: "Todas as mesas desse intervalo já existem." };
     }
 
     const { error } = await supabase.from("tables").insert(rows);

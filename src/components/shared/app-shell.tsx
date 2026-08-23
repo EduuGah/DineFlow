@@ -27,9 +27,9 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
 
   return (
     <div className="bg-background flex min-h-dvh flex-col lg:flex-row">
-      {/* Desktop: navegacao lateral fixa */}
+      {/* Desktop: navegação lateral fixa */}
       <aside className="border-border bg-surface hidden w-60 shrink-0 flex-col border-r lg:flex">
-        {/* O logo leva ao hub: e a saida para trocar de area sem decorar URL. */}
+        {/* O logo leva ao hub: e a saida para trocar de área sem decorar URL. */}
         <Link href="/inicio" className="hover:bg-surface-muted flex items-center gap-2 px-5 py-5">
           <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-xl">
             <ChefHat className="size-5" />
@@ -38,7 +38,7 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
             <span className="text-foreground block truncate text-sm font-bold">
               {user.restaurantName}
             </span>
-            <span className="text-foreground-subtle block text-xs">Ver todas as areas</span>
+            <span className="text-foreground-subtle block text-xs">Ver todas as áreas</span>
           </span>
         </Link>
 
@@ -83,7 +83,7 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
           <div className="ml-auto flex items-center gap-1">
             <SyncIndicator />
             <NotificationBell userId={user.id} />
-            {/* No desktop o menu do usuario vive na barra lateral. */}
+            {/* No desktop o menu do usuário vive na barra lateral. */}
             <span className="lg:hidden">
               <UserMenu user={user} compact overflow={overflow} />
             </span>
@@ -133,7 +133,7 @@ function UserMenu({
           <button
             type="button"
             className="text-foreground-muted hover:bg-surface-muted flex size-11 items-center justify-center rounded-full"
-            aria-label="Menu do usuario"
+            aria-label="Menu do usuário"
           >
             <MoreHorizontal className="size-5" />
           </button>

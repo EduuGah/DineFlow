@@ -9,16 +9,16 @@ import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import type { ActionResult } from "@/lib/errors";
 
 /**
- * Primeiro acesso de quem entrou com Google e ainda nao tem vinculo.
+ * Primeiro acesso de quem entrou com Google e ainda não tem vínculo.
  *
  * Duas pessoas diferentes chegam nesta tela, e ela precisa servir as duas: o
- * dono, que vai cadastrar a casa aqui mesmo, e o funcionario que entrou antes
- * de o gerente convidar o e-mail dele. Por isso o formulario vem primeiro e a
+ * dono, que vai cadastrar a casa aqui mesmo, e o funcionário que entrou antes
+ * de o gerente convidar o e-mail dele. Por isso o formulário vem primeiro e a
  * explicacao do convite logo abaixo, sem exigir escolha nenhuma na chegada.
  */
 export function CreateRestaurantForm({ email }: { email: string }) {
   // Em caso de sucesso a action redireciona no servidor e este componente nem
-  // chega a re-renderizar -- o estado aqui so existe para mostrar erro.
+  // chega a re-renderizar -- o estado aqui só existe para mostrar erro.
   const [state, action, pending] = useActionState<ActionResult<null> | null, FormData>(
     createRestaurant,
     null,
@@ -27,11 +27,11 @@ export function CreateRestaurantForm({ email }: { email: string }) {
   const fieldErrors = state?.ok === false ? state.fieldErrors : undefined;
 
   /*
-   * Confirmacao com botao, em vez de navegacao automatica.
+   * Confirmacao com botao, em vez de navegação automática.
    *
    * A ancora comum forca recarga completa: o hub e renderizado do zero, sem
-   * chance de o cache do router servir a versao anterior desta mesma conta --
-   * aquela em que ela ainda nao tinha restaurante.
+   * chance de o cache do router servir a versão anterior desta mesma conta --
+   * aquela em que ela ainda não tinha restaurante.
    */
   if (state?.ok) {
     return (
@@ -42,19 +42,19 @@ export function CreateRestaurantForm({ email }: { email: string }) {
         <div>
           <h1 className="text-foreground text-2xl font-bold tracking-tight">Restaurante criado</h1>
           <p className="text-foreground-muted mt-2 text-sm">
-            Voce e o administrador da conta. O proximo passo e cadastrar as mesas e o cardapio.
+            Você e o administrador da conta. O proximo passo e cadastrar as mesas e o cardápio.
           </p>
         </div>
         <div className="flex w-full flex-col items-stretch gap-2">
           <Button asChild size="lg" fullWidth icon={<ArrowRight className="size-4" />}>
-            {/* Quem cria o restaurante vira admin: o destino util e o painel. */}
+            {/* Quem cria o restaurante vira admin: o destino útil e o painel. */}
             <a href="/gerente">Acessar o painel</a>
           </Button>
           <a
             href="/inicio"
             className="text-foreground-muted hover:text-foreground text-center text-xs"
           >
-            ou ver todas as areas
+            ou ver todas as áreas
           </a>
         </div>
       </div>
@@ -71,7 +71,7 @@ export function CreateRestaurantForm({ email }: { email: string }) {
           Cadastre seu restaurante
         </h1>
         <p className="text-foreground-muted text-sm">
-          Voce entrou como <span className="text-foreground font-medium">{email}</span>. Dê um nome
+          Você entrou como <span className="text-foreground font-medium">{email}</span>. Dê um nome
           à casa e o DineFlow já abre configurado para você montar o cardápio.
         </p>
       </div>

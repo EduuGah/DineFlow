@@ -6,8 +6,8 @@ import { env } from "@/lib/env";
 import type { Database } from "@/types/database";
 
 /**
- * Client de servidor com a sessao do usuario. Toda query feita por ele passa
- * pelo RLS -- e assim que o isolamento entre restaurantes chega ate as
+ * Client de servidor com a sessão do usuário. Toda query feita por ele passa
+ * pelo RLS -- e assim que o isolamento entre restaurantes chega até as
  * Server Actions e Server Components.
  */
 export async function createClient() {
@@ -24,8 +24,8 @@ export async function createClient() {
             cookieStore.set(name, value, options);
           }
         } catch {
-          // Server Component nao pode escrever cookie. O middleware ja
-          // renova a sessao antes da renderizacao, entao ignorar aqui e
+          // Server Component não pode escrever cookie. O middleware já
+          // renova a sessão antes da renderizacao, então ignorar aqui e
           // seguro.
         }
       },

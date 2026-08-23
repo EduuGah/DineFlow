@@ -46,7 +46,7 @@ export function SkeletonGrid({ items = 8, className }: { items?: number; classNa
 }
 
 /**
- * Estado vazio (secao 11). Nunca so "nenhum resultado": sempre diz o que
+ * Estado vazio (secao 11). Nunca só "nenhum resultado": sempre diz o que
  * fazer em seguida, porque quem chega aqui geralmente esta configurando o
  * sistema pela primeira vez.
  */
@@ -84,7 +84,7 @@ export function EmptyState({
 }
 
 export function ErrorState({
-  title = "Nao foi possivel carregar",
+  title = "Não foi possível carregar",
   description,
   onRetry,
   className,
@@ -154,7 +154,7 @@ export function Banner({
 export function OfflineBanner() {
   return (
     <Banner tone="danger" icon={<WifiOff className="size-4 shrink-0" />}>
-      Sem conexao. Os pedidos ficam guardados aqui e sao enviados assim que a internet voltar.
+      Sem conexão. Os pedidos ficam guardados aqui e são enviados assim que a internet voltar.
     </Banner>
   );
 }

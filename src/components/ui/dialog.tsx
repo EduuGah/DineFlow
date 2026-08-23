@@ -73,9 +73,9 @@ export function Dialog({
 }
 
 /**
- * Confirmacao de acao critica (secao 11 do roadmap).
+ * Confirmacao de ação critica (secao 11 do roadmap).
  *
- * Usada apenas onde a acao e irreversivel -- cancelar pedido, excluir produto.
+ * Usada apenas onde a ação e irreversivel -- cancelar pedido, excluir produto.
  * Confirmar tudo treina a equipe a clicar "sim" sem ler.
  */
 export function ConfirmDialog({

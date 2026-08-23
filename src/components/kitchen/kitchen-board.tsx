@@ -41,8 +41,8 @@ const COLUMNS = [
 /**
  * Kitchen Display System (secoes 12 e 37 do roadmap).
  *
- * Nao e uma tela administrativa com filtros e menus: sao tres colunas, cartoes
- * grandes e um botao obvio por cartao. A cozinha nao "navega" no sistema --
+ * Não e uma tela administrativa com filtros e menus: são três colunas, cartoes
+ * grandes e um botao obvio por cartao. A cozinha não "navega" no sistema --
  * ela olha, toca e volta para a chapa.
  */
 export function KitchenBoard({
@@ -58,15 +58,15 @@ export function KitchenBoard({
   const [loading, setLoading] = useState(false);
   const knownIds = useRef(new Set(initialOrders.map((order) => order.id)));
 
-  // Cronometro proprio: os cartoes envelhecem mesmo sem evento novo.
+  // Cronometro próprio: os cartoes envelhecem mesmo sem evento novo.
   useTicker(10_000);
 
   const reload = useCallback(async () => {
     try {
       const fresh = await fetchKitchenOrders(createClient());
 
-      // Apita apenas para comanda que a cozinha ainda nao viu. Reconexao
-      // reenvia eventos antigos, e um KDS que apita a cada reconexao e um KDS
+      // Apita apenas para comanda que a cozinha ainda não viu. Reconexao
+      // reenvia eventos antigos, e um KDS que apita a cada reconexão e um KDS
       // com o som desligado no fim da primeira noite.
       const hasNew = fresh.some(
         (order) => !knownIds.current.has(order.id) && order.status === "sent",
@@ -143,7 +143,7 @@ export function KitchenBoard({
         <EmptyState
           icon={<ChefHat className="size-8" />}
           title="Nenhum pedido na fila"
-          description="Assim que um garcom enviar um pedido, ele aparece aqui automaticamente."
+          description="Assim que um garçom enviar um pedido, ele aparece aqui automaticamente."
         />
       ) : (
         <div className="grid gap-4 lg:grid-cols-3">

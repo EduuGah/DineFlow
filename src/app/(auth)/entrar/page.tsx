@@ -15,7 +15,7 @@ export default async function LoginPage({
   const session = await getSession();
 
   /*
-   * Ja conectado: mostramos a saida em vez de redirecionar.
+   * Já conectado: mostramos a saida em vez de redirecionar.
    *
    * Redirecionar daqui era o que fechava o ciclo com os outros
    * redirecionamentos automaticos e fazia a tela piscar sem explicacao.
@@ -25,7 +25,7 @@ export default async function LoginPage({
       <div className="flex flex-col gap-5">
         <div>
           <h1 className="text-foreground text-2xl font-bold tracking-tight">
-            Voce ja esta conectado
+            Você já está conectado
           </h1>
           <p className="text-foreground-muted mt-1 text-sm">{session.email}</p>
         </div>
@@ -51,8 +51,8 @@ export default async function LoginPage({
       <div className="bg-surface-muted text-foreground-muted rounded-[var(--radius-control)] px-4 py-3 text-sm">
         <p className="text-foreground font-medium">Primeira vez aqui?</p>
         <p className="mt-1">
-          Se voce e dono do restaurante, entre com o Google e cadastre o restaurante na tela
-          seguinte. Se voce faz parte da equipe, o gerente precisa convidar o seu e-mail antes do
+          Se você e dono do restaurante, entre com o Google e cadastre o restaurante na tela
+          seguinte. Se você faz parte da equipe, o gerente precisa convidar o seu e-mail antes do
           primeiro acesso.
         </p>
       </div>
