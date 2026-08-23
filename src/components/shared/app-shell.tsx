@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChefHat, LogOut, MoreHorizontal, UserRound } from "lucide-react";
+import { LogOut, MoreHorizontal, UserRound } from "lucide-react";
 import { signOut } from "@/server/actions/auth";
 import { ROLE_LABELS } from "@/domain/labels";
 import type { UserRole } from "@/domain/permissions";
@@ -11,6 +11,7 @@ import { NotificationBell } from "./notification-bell";
 import { SyncIndicator } from "./sync-indicator";
 import { Dropdown, DropdownItem, DropdownLabel, DropdownSeparator } from "@/components/ui/dropdown";
 import { cn } from "@/lib/utils/cn";
+import { Logo } from "@/components/shared/logo";
 
 export type ShellUser = {
   id: string;
@@ -31,9 +32,7 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
       <aside className="border-border bg-surface hidden w-60 shrink-0 flex-col border-r lg:flex">
         {/* O logo leva ao hub: e a saida para trocar de área sem decorar URL. */}
         <Link href="/inicio" className="hover:bg-surface-muted flex items-center gap-2 px-5 py-5">
-          <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-xl">
-            <ChefHat className="size-5" />
-          </span>
+          <Logo className="size-9" />
           <span className="min-w-0">
             <span className="text-foreground block truncate text-sm font-bold">
               {user.restaurantName}
@@ -72,9 +71,7 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="border-border bg-surface/95 sticky top-0 z-30 flex h-14 items-center gap-2 border-b px-4 backdrop-blur">
           <Link href="/inicio" className="flex min-w-0 flex-1 items-center gap-2 lg:hidden">
-            <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-lg">
-              <ChefHat className="size-4" />
-            </span>
+            <Logo className="size-8" />
             <span className="text-foreground truncate text-sm font-semibold">
               {user.restaurantName}
             </span>

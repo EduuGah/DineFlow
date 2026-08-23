@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Bell, ChefHat, ShieldCheck, WifiOff } from "lucide-react";
+import { Logo } from "@/components/shared/logo";
 import { getSession } from "@/lib/auth/session";
 import { PRIMARY_AREA } from "@/domain/permissions";
 import { Button } from "@/components/ui/button";
@@ -44,9 +45,7 @@ export default async function LandingPage() {
     <div className="bg-background flex min-h-dvh flex-col">
       <header className="flex items-center justify-between px-6 py-5">
         <span className="flex items-center gap-2">
-          <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-xl">
-            <ChefHat className="size-5" />
-          </span>
+          <Logo className="size-9" />
           <span className="text-foreground text-lg font-bold tracking-tight">DineFlow</span>
         </span>
         <Button asChild variant={session ? "primary" : "ghost"}>

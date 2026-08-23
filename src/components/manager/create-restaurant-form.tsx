@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { AlertCircle, ArrowRight, CheckCircle2, ChefHat, MailQuestion } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2, MailQuestion } from "lucide-react";
+import { Logo } from "@/components/shared/logo";
 import { createRestaurant } from "@/server/actions/restaurant";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
@@ -64,9 +65,7 @@ export function CreateRestaurantForm({ email }: { email: string }) {
   return (
     <div className="flex flex-col gap-5 py-6">
       <div className="flex flex-col gap-2">
-        <span className="bg-brand-soft text-brand flex size-11 items-center justify-center rounded-xl">
-          <ChefHat className="size-5" />
-        </span>
+        <Logo className="size-11" />
         <h1 className="text-foreground text-2xl font-bold tracking-tight">
           Cadastre seu restaurante
         </h1>

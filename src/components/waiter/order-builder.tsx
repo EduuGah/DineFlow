@@ -21,7 +21,7 @@ import { QUICK_NOTES } from "@/domain/labels";
 import { formatCurrency } from "@/lib/utils/format";
 import { Button } from "@/components/ui/button";
 import { Badge, OrderStatusBadge } from "@/components/ui/badge";
-import { Dialog } from "@/components/ui/dialog";
+import { ConfirmDialog, Dialog } from "@/components/ui/dialog";
 import { EmptyState } from "@/components/ui/feedback";
 import { Field, Input, Textarea } from "@/components/ui/field";
 import { cn } from "@/lib/utils/cn";
@@ -51,6 +51,7 @@ export function OrderBuilder({
   const [sending, setSending] = useState(false);
   const [busyProductId, setBusyProductId] = useState<string | null>(null);
   const [notesTarget, setNotesTarget] = useState<OrderItem | null>(null);
+  const [discardOpen, setDiscardOpen] = useState(false);
 
   /*
    * O id do pedido e sorteado no cliente ANTES do primeiro toque.
@@ -204,8 +205,47 @@ export function OrderBuilder({
     }
   }
 
+  /**
+   * Descarta o rascunho e libera a mesa.
+   *
+   * Sem isso, tocar num produto e sair deixava a mesa "ocupada" para sempre:
+   * o rascunho existe no banco, o trigger deriva o status da mesa a partir
+   * dele, e nao havia nenhuma acao capaz de remove-lo. O RLS ja permite apagar
+   * pedido em rascunho -- faltava a saida na tela.
+   */
+  async function discardDraft() {
+    if (!order) return;
+
+    try {
+      const { error } = await createClient().from("orders").delete().eq("id", order.id);
+      if (error) throw error;
+
+      toast.success(`Mesa ${table.number} liberada.`);
+      router.push("/garcom");
+      router.refresh();
+    } catch (error) {
+      toast.error(friendlyError(error));
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4 pb-28">
+      {order && order.status === "draft" ? (
+        <div className="border-border bg-surface-muted flex flex-wrap items-center gap-3 rounded-[var(--radius-control)] border px-4 py-3">
+          <span className="text-foreground-muted min-w-0 flex-1 text-sm">
+            Rascunho aberto nesta mesa. Enquanto ele existir, a mesa aparece ocupada no salão.
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            icon={<Trash2 className="text-danger size-4" />}
+            onClick={() => setDiscardOpen(true)}
+          >
+            Descartar e liberar mesa
+          </Button>
+        </div>
+      ) : null}
+
       {order && sentItems.length > 0 ? (
         <div className="border-border bg-surface-muted flex flex-wrap items-center gap-2 rounded-[var(--radius-control)] border px-4 py-3">
           <span className="text-foreground text-sm font-semibold">Pedido #{order.number}</span>
@@ -356,6 +396,16 @@ export function OrderBuilder({
       />
 
       <NotesDialog item={notesTarget} onClose={() => setNotesTarget(null)} onSave={saveNotes} />
+
+      <ConfirmDialog
+        open={discardOpen}
+        onOpenChange={setDiscardOpen}
+        title={`Descartar o pedido da mesa ${table.number}?`}
+        description="Os itens ainda não enviados são apagados e a mesa volta a ficar livre. Nada que já foi para a cozinha é afetado."
+        confirmLabel="Descartar"
+        destructive
+        onConfirm={discardDraft}
+      />
     </div>
   );
 }
