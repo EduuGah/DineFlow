@@ -1,10 +1,9 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { restaurantNameSchema } from "@/domain/schemas";
-import { fail, type ActionResult } from "@/lib/errors";
+import { fail, ok, type ActionResult } from "@/lib/errors";
 
 /**
  * Cadastro do restaurante no primeiro acesso.
@@ -41,28 +40,30 @@ export async function createRestaurant(
     }
 
     const { error } = await supabase.rpc("create_restaurant", { p_name: parsed.data.name });
-    if (error) return fail(error);
+
+    /*
+     * DF006 = a conta ja tem restaurante.
+     *
+     * Nao e erro do ponto de vista de quem clicou: o estado pedido ja existe.
+     * Mostrar "sua conta ja esta vinculada" numa tela que insiste em pedir o
+     * cadastro deixa a pessoa presa, sem saida visivel. Seguimos para o hub,
+     * que e onde ela queria chegar.
+     */
+    if (error && error.code !== "DF006") return fail(error);
   } catch (error) {
     return fail(error);
   }
 
-  // O cache de rota ainda enxerga a conta sem restaurante; sem invalidar, a
-  // navegacao seguinte serviria a mesma tela de "cadastre seu restaurante".
+  // O cache de rota ainda enxerga a conta sem restaurante.
   revalidatePath("/", "layout");
 
   /*
-   * O redirect fica FORA do try/catch de proposito.
+   * Sucesso devolve estado, e nao redirecionamento.
    *
-   * `redirect()` sinaliza para o Next lancando uma excecao especial. Dentro do
-   * bloco acima ela seria capturada pelo catch e virava "nao foi possivel
-   * concluir a operacao" -- com o restaurante ja criado no banco.
-   *
-   * Redirecionar aqui, e nao no cliente, tambem elimina a corrida entre
-   * `router.refresh()` e `router.push()`: a resposta da propria action ja
-   * carrega a navegacao.
-   *
-   * O destino e o hub, e nao /gerente: e a unica tela que sempre renderiza,
-   * independentemente de papel e de estado da assinatura.
+   * Redirecionar daqui dependia de o cliente aplicar a navegacao que vem na
+   * resposta da action -- e era exatamente ai que o fluxo travava, deixando a
+   * pessoa na mesma tela com o restaurante ja criado. A tela agora mostra a
+   * confirmacao e um botao, que e navegacao que nao tem como falhar.
    */
-  redirect("/inicio");
+  return ok(null);
 }
