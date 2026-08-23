@@ -37,13 +37,16 @@ function missingEnvError(names: string[]): Error {
   );
 }
 
-function readPublicEnv() {
-  const missing = Object.entries(PUBLIC_VARS)
+export function missingPublicEnv(): string[] {
+  return Object.entries(PUBLIC_VARS)
     .filter(([, value]) => !value || value.trim() === "")
     .map(([name]) => name);
+}
 
+function readPublicEnv(): { supabaseUrl: string; supabaseAnonKey: string } {
   // Reporta tudo que falta de uma vez: descobrir uma variavel por reinicio do
   // servidor e a forma mais lenta possivel de configurar um projeto.
+  const missing = missingPublicEnv();
   if (missing.length > 0) throw missingEnvError(missing);
 
   return {
@@ -52,7 +55,24 @@ function readPublicEnv() {
   };
 }
 
-export const env = readPublicEnv();
+/*
+ * Getters, e nao um objeto pronto.
+ *
+ * `next build` importa todo modulo de pagina para coletar rotas. Se a
+ * validacao rodasse na avaliacao do modulo, um deploy sem as variaveis
+ * configuradas quebraria no meio do "Collecting page data" -- longe do ponto
+ * onde a variavel e de fato usada, e com um rastro de pilha que nao ajuda
+ * ninguem. Adiando para o primeiro uso, o build termina e o erro aparece na
+ * requisicao, com a mensagem inteira.
+ */
+export const env = {
+  get supabaseUrl() {
+    return readPublicEnv().supabaseUrl;
+  },
+  get supabaseAnonKey() {
+    return readPublicEnv().supabaseAnonKey;
+  },
+};
 
 /**
  * Endereco publico desta instalacao, usado para montar o retorno do OAuth.
