@@ -60,6 +60,9 @@ export async function createRestaurant(
    * Redirecionar aqui, e nao no cliente, tambem elimina a corrida entre
    * `router.refresh()` e `router.push()`: a resposta da propria action ja
    * carrega a navegacao.
+   *
+   * O destino e o hub, e nao /gerente: e a unica tela que sempre renderiza,
+   * independentemente de papel e de estado da assinatura.
    */
-  redirect("/gerente");
+  redirect("/inicio");
 }

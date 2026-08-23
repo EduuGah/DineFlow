@@ -1,13 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  ROLE_HOME,
-  ROLE_PERMISSIONS,
-  can,
-  canAny,
-  isManagerRole,
-  permissionForRoute,
-  type UserRole,
-} from "@/domain/permissions";
+import { ROLE_PERMISSIONS, can, canAny, isManagerRole, type UserRole } from "@/domain/permissions";
 
 const ROLES: UserRole[] = ["waiter", "kitchen", "manager", "admin", "platform_admin"];
 
@@ -65,38 +57,5 @@ describe("permissoes por papel", () => {
     expect(isManagerRole("admin")).toBe(true);
     expect(isManagerRole("waiter")).toBe(false);
     expect(isManagerRole(null)).toBe(false);
-  });
-});
-
-describe("permissao exigida por rota", () => {
-  it("casa a rota mais especifica primeiro", () => {
-    expect(permissionForRoute("/gerente/funcionarios")).toBe("staff.manage");
-    expect(permissionForRoute("/gerente/cardapio")).toBe("menu.manage");
-    expect(permissionForRoute("/gerente/auditoria")).toBe("audit.view");
-    // A rota generica de /gerente so vale para o que nao casou acima.
-    expect(permissionForRoute("/gerente")).toBe("reports.view");
-    expect(permissionForRoute("/gerente/pedidos")).toBe("reports.view");
-  });
-
-  it("protege as areas de operacao", () => {
-    expect(permissionForRoute("/garcom")).toBe("orders.create");
-    expect(permissionForRoute("/garcom/mesa/abc")).toBe("orders.create");
-    expect(permissionForRoute("/cozinha")).toBe("kitchen.view");
-    expect(permissionForRoute("/plataforma")).toBe("platform.manage");
-  });
-
-  it("nao exige permissao em rotas fora das areas mapeadas", () => {
-    expect(permissionForRoute("/entrar")).toBeNull();
-    expect(permissionForRoute("/inicio")).toBeNull();
-  });
-
-  it("leva cada papel a uma tela que ele pode abrir", () => {
-    for (const role of ROLES) {
-      const permission = permissionForRoute(ROLE_HOME[role]);
-      expect(
-        permission === null || can(role, permission),
-        `${role} nao consegue abrir a propria home ${ROLE_HOME[role]}`,
-      ).toBe(true);
-    }
   });
 });

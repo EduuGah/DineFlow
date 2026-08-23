@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, Bell, ChefHat, ShieldCheck, WifiOff } from "lucide-react";
+import { getSession } from "@/lib/auth/session";
 import { Button } from "@/components/ui/button";
+
+export const dynamic = "force-dynamic";
 
 const HIGHLIGHTS = [
   {
@@ -29,7 +32,9 @@ const HIGHLIGHTS = [
   },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await getSession();
+
   return (
     <div className="bg-background flex min-h-dvh flex-col">
       <header className="flex items-center justify-between px-6 py-5">
@@ -39,8 +44,8 @@ export default function LandingPage() {
           </span>
           <span className="text-foreground text-lg font-bold tracking-tight">DineFlow</span>
         </span>
-        <Button asChild variant="ghost">
-          <Link href="/entrar">Entrar</Link>
+        <Button asChild variant={session ? "primary" : "ghost"}>
+          <Link href={session ? "/inicio" : "/entrar"}>{session ? "Ir para o app" : "Entrar"}</Link>
         </Button>
       </header>
 
@@ -56,12 +61,20 @@ export default function LandingPage() {
             que.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
-              <Link href="/entrar">Cadastrar meu restaurante</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline">
-              <Link href="/entrar">Ja tenho conta</Link>
-            </Button>
+            {session ? (
+              <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
+                <Link href="/inicio">Ir para o app</Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild size="lg" icon={<ArrowRight className="size-4" />}>
+                  <Link href="/entrar">Cadastrar meu restaurante</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link href="/entrar">Ja tenho conta</Link>
+                </Button>
+              </>
+            )}
           </div>
           <p className="text-foreground-subtle text-sm">14 dias de teste. Sem cartao.</p>
         </section>

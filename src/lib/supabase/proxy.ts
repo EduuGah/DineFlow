@@ -1,20 +1,28 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { env } from "@/lib/env";
-import { ROLE_HOME, can, permissionForRoute, type UserRole } from "@/domain/permissions";
 import type { Database } from "@/types/database";
 
+/** Rotas que existem sem sessao. */
 const PUBLIC_ROUTES = ["/entrar", "/auth", "/termos", "/privacidade"];
 
 const isPublic = (pathname: string) =>
   pathname === "/" || PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
 
 /**
- * Guarda de rota (secao 9 do roadmap): autenticado -> restaurante -> papel.
+ * Renovacao de sessao e guarda de acesso anonimo.
  *
- * Roda no proxy do Next (o antigo middleware). A checagem aqui existe para
- * redirecionar bem, nao para proteger dado: o proxy roda no edge e nao ve o
- * banco. Quem barra acesso indevido a dado continua sendo o RLS.
+ * O proxy faz DUAS coisas, e so essas duas: mantem o token vivo e manda quem
+ * nao tem sessao para a tela de entrada.
+ *
+ * Ele NAO decide mais para onde um usuario autenticado deve ir. Essa decisao
+ * dependia do papel lido do JWT, que so atualiza no proximo refresh do token --
+ * e quando ela discordava do que a pagina decidia (lendo o banco ao vivo), o
+ * usuario ficava saltando entre telas sem entender por que. Navegacao de quem
+ * ja entrou agora e sempre explicita: um botao, um destino.
+ *
+ * Isto nunca foi uma fronteira de seguranca. O proxy roda no edge e nao ve o
+ * banco; quem barra acesso indevido a dado e o RLS.
  */
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -44,33 +52,11 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (!user) {
-    if (isPublic(pathname)) return response;
-
+  if (!user && !isPublic(pathname)) {
     const redirect = request.nextUrl.clone();
     redirect.pathname = "/entrar";
     redirect.searchParams.set("proximo", pathname);
     return NextResponse.redirect(redirect);
-  }
-
-  const role = (user.app_metadata?.role ?? null) as UserRole | null;
-
-  // Usuario logado nao volta para a tela de login.
-  if (pathname === "/entrar" || pathname === "/") {
-    const home = request.nextUrl.clone();
-    home.pathname = role ? ROLE_HOME[role] : "/inicio";
-    home.search = "";
-    return NextResponse.redirect(home);
-  }
-
-  // Sem o papel no token (conta recem-criada, por exemplo) deixamos passar: a
-  // pagina resolve o perfil no banco e decide.
-  const permission = permissionForRoute(pathname);
-  if (role && permission && !can(role, permission)) {
-    const home = request.nextUrl.clone();
-    home.pathname = ROLE_HOME[role];
-    home.search = "";
-    return NextResponse.redirect(home);
   }
 
   return response;
