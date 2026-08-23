@@ -102,3 +102,23 @@ export function appUrl(): string {
 
   return "http://localhost:3000";
 }
+
+/**
+ * Chave service_role: ignora o RLS por completo.
+ *
+ * Necessária apenas para criar credenciais de funcionário no Supabase Auth.
+ * Resolvida sob demanda, e não no boot: um projeto sem ela configurada continua
+ * rodando o resto do sistema -- só o cadastro de equipe falha, com mensagem
+ * dizendo o que falta.
+ *
+ * Nunca importe este módulo de um componente cliente.
+ */
+export function serviceRoleKey(): string {
+  const value = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!value || value.trim() === "") {
+    throw missingEnvError(["SUPABASE_SERVICE_ROLE_KEY"]);
+  }
+
+  return value;
+}

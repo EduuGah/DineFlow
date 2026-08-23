@@ -38,6 +38,28 @@ export const restaurantNameSchema = z.object({
   name: requiredText("O nome do restaurante", 2, 120),
 });
 
+// Política de senha (seção 24): comprimento acima de complexidade. Senha
+// complexa demais num restaurante termina anotada num papel no balcão.
+export const passwordSchema = z
+  .string()
+  .min(8, "A senha precisa ter pelo menos 8 caracteres.")
+  .max(72, "A senha pode ter no máximo 72 caracteres.");
+
+export const signInSchema = z.object({
+  email: emailSchema,
+  password: z.string().min(1, "Informe sua senha."),
+});
+
+export const staffAccountSchema = z.object({
+  name: requiredText("O nome do funcionário", 2, 120),
+  email: emailSchema,
+  role: z.enum(["waiter", "kitchen", "manager", "admin"], {
+    error: "Selecione um papel válido.",
+  }),
+  phone: optionalText(20),
+  password: passwordSchema,
+});
+
 export const invitationSchema = z.object({
   email: emailSchema,
   role: z.enum(["waiter", "kitchen", "manager", "admin"], {
@@ -141,6 +163,7 @@ export const restaurantSettingsSchema = z.object({
 });
 
 export type InvitationInput = z.infer<typeof invitationSchema>;
+export type StaffAccountInput = z.infer<typeof staffAccountSchema>;
 export type TableInput = z.infer<typeof tableSchema>;
 export type CategoryInput = z.infer<typeof categorySchema>;
 export type ProductInput = z.infer<typeof productSchema>;

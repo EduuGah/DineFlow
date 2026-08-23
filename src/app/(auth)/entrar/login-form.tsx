@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Field, Input } from "@/components/ui/field";
 
-/** Mensagens dos erros que o fluxo de OAuth devolve na URL. */
+/** Mensagens dos erros que o fluxo de acesso devolve na URL. */
 const LOGIN_ERRORS: Record<string, string> = {
+  credencial: "E-mail ou senha incorretos.",
+  "conta-inativa": "Seu acesso foi desativado. Fale com o gerente do restaurante.",
   "acesso-negado": "O acesso pela conta Google foi negado. Tente de novo.",
   "link-invalido": "O link de retorno era inválido. Comece o login novamente.",
   "sem-verificador":
@@ -38,26 +41,21 @@ function GoogleMark() {
   );
 }
 
+/**
+ * Dois caminhos de entrada, nesta ordem de propósito.
+ *
+ * A equipe é quem abre esta tela todo dia, e entra com o usuário que o
+ * administrador criou. O Google fica embaixo: é o caminho do dono, usado uma
+ * vez por semana.
+ */
 export function LoginForm({ next, loginError }: { next?: string; loginError?: string }) {
-  const [redirecting, setRedirecting] = useState(false);
+  const [entrando, setEntrando] = useState(false);
+  const [abrindoGoogle, setAbrindoGoogle] = useState(false);
 
   const error = loginError ? (LOGIN_ERRORS[loginError] ?? LOGIN_ERRORS["sessao-invalida"]) : null;
 
   return (
-    /*
-     * Formulario GET para um Route Handler, e não Server Action.
-     *
-     * O handler precisa gravar o cookie do verificador PKCE na mesma resposta
-     * que redireciona para o Google. Como bonus, funciona sem JavaScript.
-     */
-    <form
-      action="/auth/login"
-      method="get"
-      onSubmit={() => setRedirecting(true)}
-      className="flex flex-col gap-4"
-    >
-      <input type="hidden" name="proximo" value={next ?? ""} />
-
+    <div className="flex flex-col gap-5">
       {error ? (
         <p
           role="alert"
@@ -68,17 +66,71 @@ export function LoginForm({ next, loginError }: { next?: string; loginError?: st
         </p>
       ) : null}
 
-      <Button
-        type="submit"
-        size="lg"
-        variant="outline"
-        fullWidth
-        icon={<GoogleMark />}
-        loading={redirecting}
-        loadingText="Abrindo o Google..."
+      <form
+        action="/auth/senha"
+        method="post"
+        onSubmit={() => setEntrando(true)}
+        className="flex flex-col gap-4"
       >
-        Continuar com Google
-      </Button>
-    </form>
+        <input type="hidden" name="proximo" value={next ?? ""} />
+
+        <Field label="E-mail" htmlFor="email" required>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            inputMode="email"
+            autoComplete="username"
+            autoFocus
+            required
+            placeholder="voce@restaurante.com.br"
+          />
+        </Field>
+
+        <Field label="Senha" htmlFor="password" required>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+        </Field>
+
+        <Button type="submit" size="lg" fullWidth loading={entrando} loadingText="Entrando...">
+          Entrar
+        </Button>
+      </form>
+
+      <div className="flex items-center gap-3">
+        <span className="bg-border h-px flex-1" />
+        <span className="text-foreground-subtle text-xs">ou</span>
+        <span className="bg-border h-px flex-1" />
+      </div>
+
+      {/*
+        Formulário GET para um Route Handler: o cookie do verificador PKCE
+        precisa ser gravado na mesma resposta que redireciona para o Google.
+      */}
+      <form
+        action="/auth/login"
+        method="get"
+        onSubmit={() => setAbrindoGoogle(true)}
+        className="flex flex-col"
+      >
+        <input type="hidden" name="proximo" value={next ?? ""} />
+        <Button
+          type="submit"
+          size="lg"
+          variant="outline"
+          fullWidth
+          icon={<GoogleMark />}
+          loading={abrindoGoogle}
+          loadingText="Abrindo o Google..."
+        >
+          Continuar com Google
+        </Button>
+      </form>
+    </div>
   );
 }

@@ -4,12 +4,12 @@ import { useActionState, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useActionSuccess } from "@/hooks/use-action-success";
 import { toast } from "sonner";
-import { MailPlus, Pencil, UserMinus, UserPlus, Users, X } from "lucide-react";
+import { KeyRound, Pencil, UserMinus, UserPlus, Users } from "lucide-react";
 import {
+  createStaffAccount,
   deactivateStaff,
-  inviteStaff,
   reactivateStaff,
-  revokeInvitation,
+  resetStaffPassword,
   updateStaff,
 } from "@/server/actions/staff";
 import { ROLE_DESCRIPTIONS, ROLE_LABELS } from "@/domain/labels";
@@ -18,25 +18,20 @@ import { ConfirmDialog, Dialog } from "@/components/ui/dialog";
 import { Field, Input, Select } from "@/components/ui/field";
 import { DataTable, Td, Th, Tr } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/feedback";
-import { relativeTime } from "@/lib/utils/format";
 import type { ActionResult } from "@/lib/errors";
 import type { Enums, Tables } from "@/types/database";
 
 type Staff = Tables<"users">;
-type Invitation = Tables<"staff_invitations">;
 
 const ASSIGNABLE_ROLES: Enums<"user_role">[] = ["waiter", "kitchen", "manager", "admin"];
 
 export function StaffManager({
   staff,
-  invitations,
   currentUserId,
   currentRole,
 }: {
   staff: Staff[];
-  invitations: Invitation[];
   currentUserId: string;
   currentRole: Enums<"user_role">;
 }) {
@@ -44,56 +39,21 @@ export function StaffManager({
   const [inviting, setInviting] = useState(false);
   const [editing, setEditing] = useState<Staff | null>(null);
   const [deactivating, setDeactivating] = useState<Staff | null>(null);
+  const [resetting, setResetting] = useState<Staff | null>(null);
 
   const roles = ASSIGNABLE_ROLES.filter((role) => role !== "admin" || currentRole === "admin");
 
   return (
     <div className="flex flex-col gap-5">
-      <Button icon={<MailPlus className="size-4" />} onClick={() => setInviting(true)}>
-        Convidar pelo e-mail
+      <Button icon={<UserPlus className="size-4" />} onClick={() => setInviting(true)}>
+        Criar acesso
       </Button>
-
-      {invitations.length > 0 ? (
-        <Card>
-          <CardHeader
-            title="Convites aguardando o primeiro acesso"
-            description="O vínculo acontece quando a pessoa entrar com a conta Google desse e-mail."
-          />
-          <ul className="divide-border divide-y">
-            {invitations.map((invitation) => (
-              <li key={invitation.id} className="flex flex-wrap items-center gap-3 px-5 py-3">
-                <span className="text-foreground min-w-0 flex-1 truncate text-sm font-medium">
-                  {invitation.email}
-                </span>
-                <Badge tone="neutral" size="sm">
-                  {ROLE_LABELS[invitation.role]}
-                </Badge>
-                <span className="text-foreground-subtle text-xs">
-                  convidado {relativeTime(invitation.created_at)}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label={`Cancelar convite de ${invitation.email}`}
-                  icon={<X className="text-danger size-4" />}
-                  onClick={async () => {
-                    const result = await revokeInvitation(invitation.id);
-                    if (result.ok) toast.success("Convite cancelado.");
-                    else toast.error(result.error);
-                    router.refresh();
-                  }}
-                />
-              </li>
-            ))}
-          </ul>
-        </Card>
-      ) : null}
 
       {staff.length === 0 ? (
         <EmptyState
           icon={<Users className="size-8" />}
           title="Nenhum funcionário na equipe"
-          description="Convide os e-mails do salão e da cozinha. Cada pessoa entra com a própria conta Google."
+          description="Crie o acesso de cada pessoa do salão e da cozinha. Você define a senha e entrega para ela."
           action={
             <Button size="lg" onClick={() => setInviting(true)}>
               Convidar equipe
@@ -144,6 +104,13 @@ export function StaffManager({
                       icon={<Pencil className="size-4" />}
                       onClick={() => setEditing(person)}
                     />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      aria-label={`Redefinir a senha de ${person.name}`}
+                      icon={<KeyRound className="size-4" />}
+                      onClick={() => setResetting(person)}
+                    />
                     {person.status === "active" ? (
                       <Button
                         variant="ghost"
@@ -175,7 +142,8 @@ export function StaffManager({
         </DataTable>
       )}
 
-      <InviteDialog open={inviting} roles={roles} onClose={() => setInviting(false)} />
+      <CreateAccountDialog open={inviting} roles={roles} onClose={() => setInviting(false)} />
+      <ResetPasswordDialog staff={resetting} onClose={() => setResetting(null)} />
       <EditStaffDialog staff={editing} roles={roles} onClose={() => setEditing(null)} />
 
       <ConfirmDialog
@@ -229,7 +197,7 @@ function RoleSelect({
   );
 }
 
-function InviteDialog({
+function CreateAccountDialog({
   open,
   roles,
   onClose,
@@ -240,12 +208,12 @@ function InviteDialog({
 }) {
   const router = useRouter();
   const [state, action, pending] = useActionState<ActionResult<null> | null, FormData>(
-    inviteStaff,
+    createStaffAccount,
     null,
   );
 
   useActionSuccess(state, () => {
-    toast.success("Convite criado. Peca para a pessoa entrar com o Google desse e-mail.");
+    toast.success("Acesso criado. Entregue o e-mail e a senha para a pessoa.");
     onClose();
     router.refresh();
   });
@@ -256,46 +224,69 @@ function InviteDialog({
     <Dialog
       open={open}
       onOpenChange={(next) => !next && onClose()}
-      title="Convidar para a equipe"
-      description="O acesso e liberado no primeiro login com a conta Google desse e-mail."
-      size="sm"
+      title="Criar acesso"
+      description="A conta já nasce pronta. Entregue o e-mail e a senha para a pessoa."
       footer={
         <>
           <Button variant="ghost" onClick={onClose} disabled={pending}>
             Cancelar
           </Button>
-          <Button type="submit" form="invite-form" loading={pending}>
-            Convidar
+          <Button type="submit" form="conta-form" loading={pending}>
+            Criar acesso
           </Button>
         </>
       }
     >
-      <form id="invite-form" action={action} className="flex flex-col gap-4" noValidate>
+      <form id="conta-form" action={action} className="flex flex-col gap-4" noValidate>
         {state && !state.ok ? (
           <p role="alert" className="text-danger text-sm font-medium">
             {state.error}
           </p>
         ) : null}
 
+        <Field label="Nome" htmlFor="conta-nome" required error={fieldErrors?.name}>
+          <Input id="conta-nome" name="name" required autoFocus placeholder="João Pereira" />
+        </Field>
+
         <Field
-          label="E-mail da conta Google"
-          htmlFor="invite-email"
+          label="E-mail"
+          htmlFor="conta-email"
           required
-          hint="Precisa ser exatamente o e-mail que a pessoa usa para entrar no Google."
+          hint="Serve como usuário. Não precisa ser conta Google."
           error={fieldErrors?.email}
         >
           <Input
-            id="invite-email"
+            id="conta-email"
             name="email"
             type="email"
             inputMode="email"
             required
-            autoFocus
-            placeholder="joao@gmail.com"
+            placeholder="joao@restaurante.com.br"
           />
         </Field>
 
-        <RoleSelect id="invite-role" roles={roles} error={fieldErrors?.role} />
+        <RoleSelect id="conta-papel" roles={roles} error={fieldErrors?.role} />
+
+        <Field label="Telefone" htmlFor="conta-telefone" hint="Opcional.">
+          <Input id="conta-telefone" name="phone" inputMode="tel" placeholder="(11) 90000-0000" />
+        </Field>
+
+        <Field
+          label="Senha inicial"
+          htmlFor="conta-senha"
+          required
+          hint="Pelo menos 8 caracteres. Fica visível para você anotar e entregar."
+          error={fieldErrors?.password}
+        >
+          <Input
+            id="conta-senha"
+            name="password"
+            type="text"
+            minLength={8}
+            required
+            autoComplete="off"
+          />
+        </Field>
       </form>
     </Dialog>
   );
@@ -380,6 +371,71 @@ function EditStaffDialog({
           </Field>
         </form>
       ) : null}
+    </Dialog>
+  );
+}
+
+/**
+ * Redefinição de senha pelo gerente.
+ *
+ * Não existe "esqueci minha senha" por e-mail aqui de propósito: no meio do
+ * movimento, a saída que funciona é o gerente definir uma nova na hora e falar
+ * em voz alta. O fluxo por e-mail pressupõe que o garçom tenha acesso à caixa
+ * de entrada durante o turno.
+ */
+function ResetPasswordDialog({ staff, onClose }: { staff: Staff | null; onClose: () => void }) {
+  const [password, setPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function handleReset() {
+    if (!staff) return;
+
+    setSaving(true);
+    try {
+      const result = await resetStaffPassword(staff.id, password);
+      if (result.ok) {
+        toast.success("Senha redefinida. Passe a nova senha para a pessoa.");
+        setPassword("");
+        onClose();
+      } else {
+        toast.error(result.error);
+      }
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Dialog
+      open={Boolean(staff)}
+      onOpenChange={(next) => !next && onClose()}
+      title="Redefinir senha"
+      description={staff ? `Nova senha para ${staff.name}.` : undefined}
+      size="sm"
+      footer={
+        <>
+          <Button variant="ghost" onClick={onClose} disabled={saving}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => void handleReset()}
+            loading={saving}
+            disabled={password.length < 8}
+          >
+            Redefinir
+          </Button>
+        </>
+      }
+    >
+      <Field label="Nova senha" htmlFor="nova-senha" hint="Pelo menos 8 caracteres.">
+        <Input
+          id="nova-senha"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          minLength={8}
+          autoComplete="off"
+        />
+      </Field>
     </Dialog>
   );
 }
