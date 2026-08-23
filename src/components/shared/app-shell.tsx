@@ -29,15 +29,18 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
     <div className="bg-background flex min-h-dvh flex-col lg:flex-row">
       {/* Desktop: navegacao lateral fixa */}
       <aside className="border-border bg-surface hidden w-60 shrink-0 flex-col border-r lg:flex">
-        <div className="flex items-center gap-2 px-5 py-5">
+        {/* O logo leva ao hub: e a saida para trocar de area sem decorar URL. */}
+        <Link href="/inicio" className="hover:bg-surface-muted flex items-center gap-2 px-5 py-5">
           <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-xl">
             <ChefHat className="size-5" />
           </span>
-          <div className="min-w-0">
-            <p className="text-foreground truncate text-sm font-bold">{user.restaurantName}</p>
-            <p className="text-foreground-subtle text-xs">DineFlow</p>
-          </div>
-        </div>
+          <span className="min-w-0">
+            <span className="text-foreground block truncate text-sm font-bold">
+              {user.restaurantName}
+            </span>
+            <span className="text-foreground-subtle block text-xs">Ver todas as areas</span>
+          </span>
+        </Link>
 
         <nav className="flex flex-1 flex-col gap-0.5 px-3 py-2">
           {items.map((item) => {
@@ -68,12 +71,14 @@ export function AppShell({ user, children }: { user: ShellUser; children: React.
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="border-border bg-surface/95 sticky top-0 z-30 flex h-14 items-center gap-2 border-b px-4 backdrop-blur">
-          <div className="flex min-w-0 flex-1 items-center gap-2 lg:hidden">
+          <Link href="/inicio" className="flex min-w-0 flex-1 items-center gap-2 lg:hidden">
             <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-lg">
               <ChefHat className="size-4" />
             </span>
-            <p className="text-foreground truncate text-sm font-semibold">{user.restaurantName}</p>
-          </div>
+            <span className="text-foreground truncate text-sm font-semibold">
+              {user.restaurantName}
+            </span>
+          </Link>
 
           <div className="ml-auto flex items-center gap-1">
             <SyncIndicator />

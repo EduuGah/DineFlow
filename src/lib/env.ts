@@ -77,9 +77,14 @@ export const env = {
 /**
  * Endereco publico desta instalacao, usado para montar o retorno do OAuth.
  *
- * A ordem importa. `NEXT_PUBLIC_APP_URL` vem primeiro porque e a unica que o
- * dono do projeto controla; `VERCEL_URL` cobre os deploys de preview, cuja URL
- * muda a cada commit e nao caberia numa variavel fixa.
+ * Precisa ser EXATAMENTE o dominio que a pessoa tem na barra do navegador. O
+ * cookie do verificador PKCE e gravado no host da ida e lido no host da volta;
+ * se os dois diferirem, o login falha sem erro aparente.
+ *
+ * Por isso `VERCEL_URL` nao serve para producao: ela e o host daquele deploy
+ * (`app-a1b2c3.vercel.app`), nao o alias estavel que o usuario acessa. Em
+ * producao vale `VERCEL_PROJECT_PRODUCTION_URL`; `VERCEL_URL` fica so para os
+ * previews, onde o host do deploy e de fato o endereco visitado.
  *
  * Nao derivamos do cabecalho Host de proposito: seria um valor vindo da
  * requisicao decidindo para onde a sessao volta.
@@ -88,7 +93,11 @@ export function appUrl(): string {
   const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (configured) return configured.replace(/\/$/, "");
 
-  const vercel = process.env.VERCEL_URL?.trim();
+  const isProduction = process.env.VERCEL_ENV === "production";
+  const vercel = isProduction
+    ? (process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() ?? process.env.VERCEL_URL?.trim())
+    : process.env.VERCEL_URL?.trim();
+
   if (vercel) return `https://${vercel}`;
 
   return "http://localhost:3000";

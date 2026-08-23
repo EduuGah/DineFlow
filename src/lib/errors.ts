@@ -23,8 +23,19 @@ const SQLSTATE_MESSAGES: Record<string, string> = {
   "23503": "Esse item depende de outro registro que nao existe mais.",
   "23514": "Alguns dados nao passaram na validacao.",
   "42501": "Voce nao tem permissao para essa acao.",
-  "42P01": "Recurso indisponivel. Fale com o suporte.",
   PGRST301: "Sua sessao expirou. Entre novamente.",
+
+  /*
+   * Banco desatualizado em relacao ao codigo.
+   *
+   * Acontece quando um deploy sobe sem as migrations correspondentes: a tela
+   * chama algo que ainda nao existe no banco. A mensagem aponta para a causa
+   * porque quem ve isso e quem instalou o sistema, nao o garcom.
+   */
+  "42P01": "O banco de dados esta desatualizado (tabela ausente). Aplique as migrations pendentes.",
+  "42883": "O banco de dados esta desatualizado (funcao ausente). Aplique as migrations pendentes.",
+  PGRST202:
+    "O banco de dados esta desatualizado: esta operacao ainda nao existe nele. Aplique as migrations pendentes (npm run db:push).",
 };
 
 const UNIQUE_CONSTRAINT_MESSAGES: Record<string, string> = {
@@ -92,5 +103,21 @@ export function ok<T>(data: T): ActionResult<T> {
 }
 
 export function fail(error: unknown, fieldErrors?: Record<string, string[]>): ActionResult<never> {
+  /*
+   * No servidor, o motivo real vai para o log.
+   *
+   * A tela mostra so o que ajuda quem esta atendendo; quem opera o sistema
+   * precisa do resto. Sem isto, um erro sem codigo conhecido vira "nao foi
+   * possivel concluir a operacao" e desaparece -- sem nenhum rastro de onde
+   * procurar.
+   */
+  if (typeof window === "undefined") {
+    const pg = error as Partial<PostgrestError> & { message?: string };
+    console.error(
+      "[dineflow] acao falhou:",
+      [pg?.code, pg?.message ?? String(error), pg?.details, pg?.hint].filter(Boolean).join(" | "),
+    );
+  }
+
   return { ok: false, error: friendlyError(error), fieldErrors };
 }

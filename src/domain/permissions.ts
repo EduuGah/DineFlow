@@ -86,31 +86,3 @@ export function canAny(role: UserRole | null | undefined, permissions: Permissio
 export function isManagerRole(role: UserRole | null | undefined): boolean {
   return role === "manager" || role === "admin";
 }
-
-/**
- * Tela inicial de cada papel. O garcom cai direto no salao e a cozinha no KDS:
- * ninguem deveria precisar navegar para comecar a trabalhar.
- */
-export const ROLE_HOME: Record<UserRole, string> = {
-  waiter: "/garcom",
-  kitchen: "/cozinha",
-  manager: "/gerente",
-  admin: "/gerente",
-  platform_admin: "/plataforma",
-};
-
-/** Permissao minima exigida por prefixo de rota, usada pelo middleware. */
-export const ROUTE_PERMISSIONS: { prefix: string; permission: Permission }[] = [
-  { prefix: "/garcom", permission: "orders.create" },
-  { prefix: "/cozinha", permission: "kitchen.view" },
-  { prefix: "/gerente/funcionarios", permission: "staff.manage" },
-  { prefix: "/gerente/cardapio", permission: "menu.manage" },
-  { prefix: "/gerente/mesas", permission: "tables.manage" },
-  { prefix: "/gerente/auditoria", permission: "audit.view" },
-  { prefix: "/gerente", permission: "reports.view" },
-  { prefix: "/plataforma", permission: "platform.manage" },
-];
-
-export function permissionForRoute(pathname: string): Permission | null {
-  return ROUTE_PERMISSIONS.find((route) => pathname.startsWith(route.prefix))?.permission ?? null;
-}
