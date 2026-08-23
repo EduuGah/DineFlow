@@ -70,9 +70,12 @@ export default async function HomePage() {
         />
       )}
 
-      <p className="text-foreground-subtle text-center text-xs">
+      <p className="text-foreground-subtle flex justify-center gap-4 text-center text-xs">
         <Link href="/" className="hover:text-foreground-muted">
           Sobre o DineFlow
+        </Link>
+        <Link href="/diagnostico" className="hover:text-foreground-muted">
+          Diagnóstico
         </Link>
       </p>
     </PageContainer>
