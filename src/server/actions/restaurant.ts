@@ -41,7 +41,16 @@ export async function createRestaurant(
     }
 
     const { error } = await supabase.rpc("create_restaurant", { p_name: parsed.data.name });
-    if (error) return fail(error);
+
+    /*
+     * DF006 = a conta ja tem restaurante.
+     *
+     * Nao e erro do ponto de vista de quem clicou: o estado pedido ja existe.
+     * Mostrar "sua conta ja esta vinculada" numa tela que insiste em pedir o
+     * cadastro deixa a pessoa presa, sem saida visivel. Seguimos para o hub,
+     * que e onde ela queria chegar.
+     */
+    if (error && error.code !== "DF006") return fail(error);
   } catch (error) {
     return fail(error);
   }
