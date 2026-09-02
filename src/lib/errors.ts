@@ -1,4 +1,5 @@
 import type { PostgrestError } from "@supabase/supabase-js";
+import { isMissingEnvError } from "@/lib/env";
 
 /**
  * Traducao de erro para linguagem de restaurante.
@@ -69,6 +70,17 @@ export function isDuplicateRequest(error: unknown): boolean {
 
 export function friendlyError(error: unknown): string {
   if (error instanceof DomainError) return error.message;
+
+  /*
+   * Configuração ausente é um caso à parte.
+   *
+   * Não é falha de dado nem de permissão: é uma variável de ambiente que
+   * ninguém definiu. A mensagem nomeia qual, porque quem vê isso é quem
+   * instalou o sistema -- e resolve em um minuto sabendo o nome.
+   */
+  if (isMissingEnvError(error)) {
+    return `Configuração incompleta no servidor: falta ${error.missing.join(", ")}. Defina a variável no ambiente e reinicie (ou refaça o deploy).`;
+  }
 
   const pg = error as Partial<PostgrestError> & { message?: string };
 

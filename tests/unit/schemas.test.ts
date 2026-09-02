@@ -40,7 +40,7 @@ describe("convite de acesso", () => {
 describe("acesso da equipe", () => {
   const base = {
     name: "João Pereira",
-    email: "joao@restaurante.com.br",
+    username: "joao",
     phone: undefined,
     role: "waiter" as const,
   };
@@ -59,21 +59,25 @@ describe("acesso da equipe", () => {
     ).toBe(false);
   });
 
-  it("normaliza o e-mail usado como usuário", () => {
-    const parsed = staffAccountSchema.parse({
-      ...base,
-      email: "  Joao@Restaurante.COM  ",
-      password: "12345678",
-    });
+  it("normaliza o usuário e recusa formato inutilizável", () => {
+    expect(
+      staffAccountSchema.parse({ ...base, username: "  JOAO  ", password: "12345678" }).username,
+    ).toBe("joao");
 
-    expect(parsed.email).toBe("joao@restaurante.com");
+    // Espaço e arroba quebrariam a conversão para o endereço interno.
+    for (const invalido of ["jo", "joao silva", "joao@casa", "-joao", "joao-"]) {
+      expect(
+        staffAccountSchema.safeParse({ ...base, username: invalido, password: "12345678" }).success,
+        `"${invalido}" deveria ser recusado`,
+      ).toBe(false);
+    }
   });
 
   it("aceita qualquer senha não vazia na entrada", () => {
     // Validar comprimento no login vazaria a política de senha para quem
     // ainda não tem conta.
-    expect(signInSchema.safeParse({ email: "a@b.com", password: "x" }).success).toBe(true);
-    expect(signInSchema.safeParse({ email: "a@b.com", password: "" }).success).toBe(false);
+    expect(signInSchema.safeParse({ identifier: "joao", password: "x" }).success).toBe(true);
+    expect(signInSchema.safeParse({ identifier: "joao", password: "" }).success).toBe(false);
   });
 });
 

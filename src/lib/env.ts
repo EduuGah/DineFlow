@@ -16,25 +16,47 @@ const PUBLIC_VARS = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 } as const;
 
-function missingEnvError(names: string[]): Error {
+/** Código do erro de configuração ausente, reconhecível por quem traduz mensagens. */
+export const ENV_MISSING = "ENV_MISSING";
+
+export type MissingEnvError = Error & { code: typeof ENV_MISSING; missing: string[] };
+
+export function isMissingEnvError(error: unknown): error is MissingEnvError {
+  return (error as { code?: string } | null)?.code === ENV_MISSING;
+}
+
+function missingEnvError(names: string[]): MissingEnvError {
   const lista = names.map((name) => `  - ${name}`).join("\n");
 
-  return new Error(
+  /*
+   * O erro carrega código e lista, e não só um texto.
+   *
+   * Sem isso, uma variável ausente chegava à tela como "não foi possível
+   * concluir a operação" -- o sintoma mais inútil possível, porque aponta para
+   * o dado quando o problema é de configuração. Quem vê isso é quem instalou o
+   * sistema e resolve em um minuto, desde que saiba o nome que falta.
+   */
+  const erro = new Error(
     [
       "",
       names.length === 1
-        ? "Falta uma variavel de ambiente:"
-        : `Faltam ${names.length} variaveis de ambiente:`,
+        ? "Falta uma variável de ambiente:"
+        : `Faltam ${names.length} variáveis de ambiente:`,
       lista,
       "",
       "Como resolver:",
       "  1. Crie o arquivo .env.local na RAIZ do projeto (ao lado do package.json).",
-      "  2. Copie o conteudo de .env.example e preencha os valores.",
+      "  2. Copie o conteúdo de .env.example e preencha os valores.",
       "  3. Pegue os valores no painel do Supabase, em Project Settings > API.",
-      "  4. Reinicie o servidor: o Next só le o .env.local na inicializacao.",
+      "  4. Reinicie o servidor: o Next só lê o .env.local na inicialização.",
       "",
     ].join("\n"),
-  );
+  ) as MissingEnvError;
+
+  erro.code = ENV_MISSING;
+  erro.missing = names;
+
+  return erro;
 }
 
 export function missingPublicEnv(): string[] {

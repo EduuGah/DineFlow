@@ -25,6 +25,21 @@ describe("traducao de erro", () => {
     }
   });
 
+  it("nomeia a variável de ambiente que falta", () => {
+    /*
+     * Configuração ausente não é falha de dado. Antes caía na mensagem
+     * genérica, que aponta para o lado errado: a pessoa procurava o problema
+     * no cadastro quando faltava uma variável no servidor.
+     */
+    const erro = Object.assign(new Error("..."), {
+      code: "ENV_MISSING",
+      missing: ["SUPABASE_SERVICE_ROLE_KEY"],
+    });
+
+    expect(friendlyError(erro)).toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(friendlyError(erro)).toMatch(/configuração incompleta/i);
+  });
+
   it("prefere a mensagem da constraint ao codigo generico", () => {
     const erro = {
       code: "23505",

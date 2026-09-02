@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { assertRestaurantPermission } from "./guard";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { staffAccountSchema, staffUpdateSchema } from "@/domain/schemas";
+import { emailForUsername } from "@/domain/staff-credentials";
 import { fail, ok, type ActionResult } from "@/lib/errors";
 
 /**
@@ -32,7 +33,7 @@ export async function createStaffAccount(
 
     const parsed = staffAccountSchema.safeParse({
       name: formData.get("name"),
-      email: formData.get("email"),
+      username: formData.get("username"),
       role: formData.get("role"),
       phone: formData.get("phone") || undefined,
       password: formData.get("password"),
@@ -54,49 +55,59 @@ export async function createStaffAccount(
       };
     }
 
-    const supabase = await createClient();
-    const { data: existing } = await supabase
-      .from("users")
-      .select("id")
-      .eq("email", parsed.data.email)
-      .maybeSingle();
-
-    if (existing) {
-      return { ok: false, error: "Esse e-mail já faz parte da equipe." };
-    }
-
+    const email = emailForUsername(parsed.data.username);
     const admin = createAdminClient();
-    const { error } = await admin.auth.admin.createUser({
-      email: parsed.data.email,
+
+    const { data: created, error } = await admin.auth.admin.createUser({
+      email,
       password: parsed.data.password,
-      // Sem etapa de confirmação: quem confirma o e-mail é o gerente, ao
-      // digitá-lo. O garçom precisa entrar hoje, não abrir caixa de entrada.
+      // Sem etapa de confirmação: o endereço é interno e nunca recebe
+      // mensagem. O garçom precisa entrar hoje, não abrir caixa de entrada.
       email_confirm: true,
       user_metadata: { name: parsed.data.name },
-      // app_metadata só pode ser escrito pela service_role. É daí que o trigger
-      // app.handle_new_auth_user() lê o tenant e o papel -- por isso ninguém
-      // consegue se auto-vincular a um restaurante.
       app_metadata: {
         restaurant_id: session.restaurantId,
         role: parsed.data.role,
       },
     });
 
-    if (error) {
-      if (error.message.toLowerCase().includes("already been registered")) {
-        return {
-          ok: false,
-          error: "Esse e-mail já tem conta no DineFlow. Use outro para este funcionário.",
-        };
+    if (error || !created.user) {
+      if ((error?.message ?? "").toLowerCase().includes("already been registered")) {
+        return { ok: false, error: "Esse usuário já existe. Escolha outro." };
       }
-      return fail(error);
+      return fail(error ?? new Error("Não foi possível criar o acesso."));
     }
 
-    if (parsed.data.phone) {
-      await supabase
-        .from("users")
-        .update({ phone: parsed.data.phone })
-        .eq("email", parsed.data.email);
+    /*
+     * O vínculo é criado AQUI, e não pelo gatilho.
+     *
+     * `app.handle_new_auth_user` roda no INSERT em auth.users e lê o
+     * restaurante de `app_metadata` -- mas o GoTrue aplica esse metadado depois
+     * do insert. O gatilho não via o restaurante e devolvia uma conta sem
+     * perfil: a pessoa entrava e caía na tela de cadastrar um restaurante novo,
+     * em vez do restaurante de quem a cadastrou.
+     *
+     * Fazer o upsert aqui remove a dependência de ordem. O gatilho continua
+     * valendo para os outros caminhos de entrada.
+     */
+    const { error: profileError } = await admin.from("users").upsert(
+      {
+        id: created.user.id,
+        restaurant_id: session.restaurantId,
+        name: parsed.data.name,
+        email,
+        role: parsed.data.role,
+        status: "active",
+        phone: parsed.data.phone,
+      },
+      { onConflict: "id" },
+    );
+
+    if (profileError) {
+      // Sem perfil a conta não serve para nada, e ficaria órfã no Auth
+      // ocupando o usuário escolhido. Desfazemos.
+      await admin.auth.admin.deleteUser(created.user.id);
+      return fail(profileError);
     }
 
     revalidatePath("/gerente/funcionarios");

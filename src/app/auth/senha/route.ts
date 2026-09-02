@@ -3,6 +3,7 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { env } from "@/lib/env";
 import { safeReturnTo } from "@/lib/auth/return-to";
 import { signInSchema } from "@/domain/schemas";
+import { resolveLoginIdentifier } from "@/domain/staff-credentials";
 import type { Database } from "@/types/database";
 
 /**
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
 
   const next = safeReturnTo(String(form.get("proximo") ?? ""));
   const parsed = signInSchema.safeParse({
-    email: form.get("email"),
+    identifier: form.get("identifier"),
     password: form.get("password"),
   });
 
@@ -43,7 +44,10 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: resolveLoginIdentifier(parsed.data.identifier),
+    password: parsed.data.password,
+  });
 
   if (error || !data.user) {
     console.error("[auth] senha recusada:", error?.message ?? "sem usuario");
